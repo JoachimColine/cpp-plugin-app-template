@@ -5,17 +5,18 @@ file(GLOB_RECURSE SRC_FILES
 
 add_library(core STATIC ${SRC_FILES})
 
-target_link_libraries(logging PUBLIC
+target_link_libraries(core PUBLIC
     Qt6::Core
     Qt6::Widgets
+    JApp::Logging
 )
 
-target_include_directories(logging
+target_include_directories(core
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-set_target_properties(logging PROPERTIES
+set_target_properties(core PROPERTIES
     AUTOMOC ON
 )
 
