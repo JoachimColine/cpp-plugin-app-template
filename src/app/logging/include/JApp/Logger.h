@@ -1,5 +1,6 @@
 #pragma once
 
+#include <JApp/LogDefinitions.h>
 #include <QObject>
 #include <QMutex>
 #include <QFile>
@@ -19,41 +20,6 @@ class Logger : public QObject
     Q_PROPERTY(QString logFilePath READ logFilePath NOTIFY logFilePathChanged)
 
 public:
-    enum class LogLevel {
-        Debug    = 0,
-        Info     = 1,
-        Warning  = 2,
-        Critical = 3,
-        Fatal    = 4
-    };
-
-    enum class OutputTarget {
-        Console = 0x01,
-        File    = 0x02,
-        Both    = Console | File
-    };
-
-    struct LogConfig {
-        LogConfig(){}
-        LogLevel minLevel     = LogLevel::Debug;
-        OutputTarget target   = OutputTarget::Both;
-        QString logDirectory;
-        QString logFilePrefix = "japp";
-        qint64 maxFileSize    = 10 * 1024 * 1024; // 10MB
-        int maxFileCount      = 5;
-        int flushIntervalMs   = 1000;
-    };
-
-    struct Log {
-        QDateTime timestamp;
-        QString   category;
-        LogLevel  level;
-        QString   file;
-        QString   function;
-        int       line;
-        QString   message;
-    };
-
     static Logger& instance();
     
     void initialize(const LogConfig& config = LogConfig());
@@ -97,7 +63,7 @@ private:
     static Logger* s_instance;
 };
 
-inline bool hasFlag(Logger::OutputTarget target, Logger::OutputTarget flag) {
+inline bool hasFlag(OutputTarget target, OutputTarget flag) {
     return (static_cast<int>(target) & static_cast<int>(flag)) != 0;
 }
 

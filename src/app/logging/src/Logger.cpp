@@ -194,7 +194,7 @@ void Logger::messageHandler(QtMsgType type, const QMessageLogContext& context, c
     s_instance->handleLog(log);
 }
 
-Logger::LogLevel Logger::qtMsgTypeToLogLevel(QtMsgType type)
+LogLevel Logger::qtMsgTypeToLogLevel(QtMsgType type)
 {
     switch (type) {
         case QtDebugMsg:    return LogLevel::Debug;
