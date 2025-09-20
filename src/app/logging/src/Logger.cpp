@@ -219,34 +219,15 @@ void Logger::rotateLogFile()
 QString Logger::formatLog(const Log& log)
 {
     QStringList parts;
-    
-    // Timestamp
-    if (m_config.enableTimestamp) {
-        parts << log.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz");
-    }
-    
-    // Level
+
+    parts << log.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz");
     parts << QString("%1").arg(levelToString(log.level));
-
-    // Category
     parts << QString("%1").arg(log.category);
-    
-    // Function and line
-    if (m_config.enableFunction && !log.function.isEmpty()) {
-        QString funcInfo = log.function;
-        if (m_config.enableLineNumber && log.line > 0) {
-            funcInfo += QString(":%1").arg(log.line);
-        }
-        parts << QString("%1").arg(funcInfo);
-    }
-    
-    // Message
+    QString funcInfo = log.function;
+    funcInfo += QString(":%1").arg(log.line);
+    parts << QString("%1").arg(funcInfo);
     parts << log.message;
-
-    // Thread ID
-    if (m_config.enableThreadId) {
-        parts << QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16);
-    }
+    parts << QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16);
     
     return parts.join(" | ");
 }

@@ -41,11 +41,6 @@ public:
         QString logFilePrefix = "japp";
         qint64 maxFileSize    = 10 * 1024 * 1024; // 10MB
         int maxFileCount      = 5;
-        bool enableTimestamp  = true;
-        bool enableCategory   = true;
-        bool enableFunction   = true;
-        bool enableLineNumber = true;
-        bool enableThreadId   = true;
         int flushIntervalMs   = 1000;
     };
 
