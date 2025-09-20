@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <JApp/Log.h>
+#include <JApp/LogFormatter.h>
 #include <iostream>
 
 using namespace JApp;
@@ -138,7 +139,7 @@ void Logger::handleLog(const Log& log)
     
     QMutexLocker locker(&m_mutex);
     
-    QString formattedMessage = formatLog(log);
+    QString formattedMessage = LogFormatter::logToString(log);
     
     // Console output
     if (hasFlag(m_config.target, OutputTarget::Console)) {
@@ -214,34 +215,6 @@ void Logger::rotateLogFile()
     m_logFile->close();
 
     createLogFile();
-}
-
-QString Logger::formatLog(const Log& log)
-{
-    QStringList parts;
-
-    parts << log.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz");
-    parts << QString("%1").arg(levelToString(log.level));
-    parts << QString("%1").arg(log.category);
-    QString funcInfo = log.function;
-    funcInfo += QString(":%1").arg(log.line);
-    parts << QString("%1").arg(funcInfo);
-    parts << log.message;
-    parts << QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16);
-    
-    return parts.join(" | ");
-}
-
-QString Logger::levelToString(LogLevel level)
-{
-    switch (level) {
-        case LogLevel::Debug:    return "DEBUG";
-        case LogLevel::Info:     return "INFO ";
-        case LogLevel::Warning:  return "WARN ";
-        case LogLevel::Critical: return "ERROR";
-        case LogLevel::Fatal:    return "FATAL";
-        default:                 return "?    ";
-    }
 }
 
 QString Logger::createLogFilePath()

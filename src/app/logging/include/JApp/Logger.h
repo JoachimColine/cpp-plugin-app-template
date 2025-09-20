@@ -44,9 +44,7 @@ private:
     void setupMessageHandler();
     void rotateLogFile();
     void createLogFile();
-    QString formatLog(const Log& log);
     void handleLog(const Log& log);
-    QString levelToString(LogLevel level);
     QString createLogFilePath();
     void ensureLogDirectory();
 
