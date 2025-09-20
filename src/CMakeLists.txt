@@ -7,6 +7,7 @@ qt_add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     JApp::Logging
+    JApp::Core	
     Qt6::Core
     Qt6::Widgets
 )
