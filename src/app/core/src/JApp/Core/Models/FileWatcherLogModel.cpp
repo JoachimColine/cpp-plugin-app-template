@@ -1,5 +1,6 @@
 #include "JApp/Core/Models/FileWatcherLogModel.h"
 #include <JApp/LogFormatter.h>
+#include <JApp/Log.h>
 #include <QDateTime>
 #include <QFileInfo>
 #include <QDebug>
@@ -92,6 +93,7 @@ void FileWatcherLogModel::onLogFileChanged(const QString &path)
 
 void FileWatcherLogModel::readNewLines()
 {
+    LOG_INFO() << "reading new lines";
     if (!m_logFile.isOpen() && !m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         emit fileError(tr("Failed to reopen log file for read: %1").arg(m_logFile.errorString()));
         return;

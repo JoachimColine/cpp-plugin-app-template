@@ -1,6 +1,6 @@
 #pragma once
 
-#include "JApp/Core/Models/LogModel.h"
+#include <JApp/Core/Models/LogModel.h>
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QTextStream>
