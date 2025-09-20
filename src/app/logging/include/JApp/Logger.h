@@ -16,6 +16,7 @@ namespace JApp {
 class Logger : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString logFilePath READ logFilePath NOTIFY logFilePathChanged)
 
 public:
     enum class LogLevel {
@@ -67,6 +68,11 @@ public:
     void setOutputTarget(OutputTarget target);
     void setLogDirectory(const QString& directory);
 
+    QString logFilePath() const;
+
+signals:
+    void logFilePathChanged(const QString& logFilePath);
+
 private slots:
     void flushLogs();
 
@@ -76,6 +82,7 @@ private:
     
     void setupMessageHandler();
     void rotateLogFile();
+    void createLogFile();
     QString formatLog(const Log& log);
     void handleLog(const Log& log);
     QString levelToString(LogLevel level);

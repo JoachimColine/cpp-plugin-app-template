@@ -22,6 +22,19 @@ Logger::~Logger()
     shutdown();
 }
 
+void Logger::createLogFile()
+{
+    m_logFile = std::make_unique<QFile>(createLogFilePath());
+    if (m_logFile->open(QIODevice::WriteOnly | QIODevice::Append)) {
+        m_logStream = std::make_unique<QTextStream>(m_logFile.get());
+        m_logStream->setEncoding(QStringConverter::Utf8);
+    } else {
+        std::cout << "Failed to open log file: " << m_logFile->fileName().toStdString() << std::endl;
+    }
+
+    emit logFilePathChanged(m_logFile->fileName());
+}
+
 Logger& Logger::instance()
 {
     if (!s_instance) {
@@ -47,13 +60,7 @@ void Logger::initialize(const LogConfig& config)
 
         // Setup file logging if enabled
         if (hasFlag(m_config.target, OutputTarget::File)) {
-            m_logFile = std::make_unique<QFile>(createLogFilePath());
-            if (m_logFile->open(QIODevice::WriteOnly | QIODevice::Append)) {
-                m_logStream = std::make_unique<QTextStream>(m_logFile.get());
-                m_logStream->setEncoding(QStringConverter::Utf8);
-            } else {
-                std::cout << "Failed to open log file: " << m_logFile->fileName().toStdString() << std::endl;
-            }
+            createLogFile();
         }
 
         // Setup Qt message handler
@@ -116,6 +123,10 @@ void Logger::setLogDirectory(const QString& directory)
     ensureLogDirectory();
 }
 
+QString Logger::logFilePath() const
+{
+    return m_logFile->fileName();
+}
 void Logger::handleLog(const Log& log)
 {
     if (!m_initialized) return;
@@ -201,11 +212,8 @@ void Logger::rotateLogFile()
     
     m_logStream->flush();
     m_logFile->close();
-    m_logFile = std::make_unique<QFile>(createLogFilePath());
-    if (m_logFile->open(QIODevice::WriteOnly | QIODevice::Append)) {
-        m_logStream = std::make_unique<QTextStream>(m_logFile.get());
-        m_logStream->setEncoding(QStringConverter::Utf8);
-    }
+
+    createLogFile();
 }
 
 QString Logger::formatLog(const Log& log)
