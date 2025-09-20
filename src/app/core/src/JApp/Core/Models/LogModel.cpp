@@ -8,7 +8,7 @@ LogModel::LogModel(QObject *parent)
 
 void LogModel::addLog(const Logger::Log& log) {
     beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size());
-    m_logs.append(log);
+    m_logs.insert(log.timestamp, log);
     endInsertRows();
 }
 
@@ -27,16 +27,19 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid() || index.row() < 0 || index.row() >= m_logs.size())
         return QVariant();
 
-    const auto &log = m_logs[index.row()];
+    auto it = m_logs.constBegin();
+    std::advance(it, index.row());
+    const auto &log = it.value();
+
     switch(role) {
-    case TimestampRole: return log.timestamp;
-    case CategoryRole:  return log.category;
-    case LevelRole:     return static_cast<int>(log.level);
-    case FileRole:      return log.file;
-    case FunctionRole:  return log.function;
-    case LineRole:      return log.line;
-    case MessageRole:   return log.message;
-    default:            return QVariant();
+        case TimestampRole: return log.timestamp;
+        case CategoryRole:  return log.category;
+        case LevelRole:     return static_cast<int>(log.level);
+        case FileRole:      return log.file;
+        case FunctionRole:  return log.function;
+        case LineRole:      return log.line;
+        case MessageRole:   return log.message;
+        default:            return QVariant();
     }
 }
 

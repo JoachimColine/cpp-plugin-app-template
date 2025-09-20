@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QVector>
+#include <QMultiMap>
 #include <JApp/Logger.h>
 
 namespace JApp::Core::Models {
@@ -29,7 +29,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QVector<Logger::Log> m_logs;
+    QMultiMap<QDateTime, JApp::Logger::Log> m_logs;
 };
 
 }
