@@ -6,7 +6,7 @@ LogModel::LogModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
 
-void LogModel::addLog(const Logger::Log& log) {
+void LogModel::addLog(const Log& log) {
     beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size());
     m_logs.insert(log.timestamp, log);
     endInsertRows();

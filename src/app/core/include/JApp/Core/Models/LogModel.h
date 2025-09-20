@@ -2,7 +2,7 @@
 
 #include <QAbstractListModel>
 #include <QMultiMap>
-#include <JApp/Logger.h>
+#include <JApp/LogDefinitions.h>
 
 namespace JApp::Core::Models {
 
@@ -27,10 +27,10 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 protected:
-    void addLog(const JApp::Logger::Log& log);
+    void addLog(const Log& log);
     void clear();
 
-    QMultiMap<QDateTime, JApp::Logger::Log> m_logs;
+    QMultiMap<QDateTime, Log> m_logs;
 };
 
 }

@@ -8,7 +8,8 @@ enum class LogLevel {
     Info     = 1,
     Warning  = 2,
     Critical = 3,
-    Fatal    = 4
+    Fatal    = 4,
+    Unknown  = 5
 };
 
 enum class OutputTarget {
