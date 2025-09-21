@@ -1,4 +1,5 @@
 #include "JApp/Core/Models/LogModel.h"
+#include <JApp/LogFormatter.h>
 
 namespace JApp::Core::Models {
 
@@ -37,6 +38,20 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
     auto it = m_logs.constBegin();
     std::advance(it, index.row());
     const auto &log = it.value();
+
+    if (role == Qt::DisplayRole) {
+        switch(index.column()) {
+        case 0: return log.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz");
+        case 1: return log.category;
+        case 2: return LogFormatter::logLevelToString(log.level);
+        case 3: return log.file;
+        case 4: return log.function;
+        case 5: return log.line;
+        case 6: return log.message;
+        case 7: return log.threadId;
+        default: return QVariant();
+        }
+    }
 
     switch(role) {
         case TimestampRole: return log.timestamp;
