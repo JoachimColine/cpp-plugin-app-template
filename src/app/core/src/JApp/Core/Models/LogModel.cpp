@@ -47,8 +47,8 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
         case 3: return log.file;
         case 4: return log.function;
         case 5: return log.line;
-        case 6: return log.message;
-        case 7: return log.threadId;
+        case 6: return log.threadId;
+        case 7: return log.message;
         default: return QVariant();
         }
     }
@@ -75,11 +75,11 @@ QVariant LogModel::headerData(int section, Qt::Orientation orientation, int role
     case 0: return "Date and time";
     case 1: return "Category";
     case 2: return "Level";
-    case 3: return "Source file";
+    case 3: return "File";
     case 4: return "Function";
     case 5: return "Line";
-    case 6: return "Message";
-    case 7: return "Thread";
+    case 6: return "Thread";
+    case 7: return "Message";
     default: return QVariant();
     }
 }
