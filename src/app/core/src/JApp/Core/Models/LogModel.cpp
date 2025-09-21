@@ -23,6 +23,13 @@ int LogModel::rowCount(const QModelIndex &parent) const {
     return m_logs.size();
 }
 
+int LogModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent)
+
+    return 8;
+}
+
 QVariant LogModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid() || index.row() < 0 || index.row() >= m_logs.size())
         return QVariant();
@@ -41,6 +48,24 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
         case MessageRole:   return log.message;
         case ThreadRole:    return log.threadId;
         default:            return QVariant();
+    }
+}
+
+QVariant LogModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
+        return QVariant();
+
+    switch (section) {
+    case 0: return "Date and time";
+    case 1: return "Category";
+    case 2: return "Level";
+    case 3: return "Source file";
+    case 4: return "Function";
+    case 5: return "Line";
+    case 6: return "Message";
+    case 7: return "Thread";
+    default: return QVariant();
     }
 }
 
