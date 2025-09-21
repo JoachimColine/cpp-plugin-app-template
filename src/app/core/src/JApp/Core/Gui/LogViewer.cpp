@@ -1,4 +1,5 @@
 #include <JApp/Core/Gui/LogViewer.h>
+#include <JApp/Core/Gui/LogLevelDelegate.h>
 #include <JApp/Core/Models/FileWatcherLogModel.h>
 #include <JApp/Log.h>
 #include <QHeaderView>
@@ -47,6 +48,8 @@ void LogViewer::buildWidget()
     m_logTableView->setSortingEnabled(true);
     m_logTableView->horizontalHeader()->setStretchLastSection(true);
     m_logTableView->verticalHeader()->setVisible(false);
+    m_logTableView->setItemDelegateForColumn(2, new LogLevelDelegate(this));
+
     m_logTableView->setModel(m_logModel);
     m_mainLayout->addWidget(m_logTableView);
 

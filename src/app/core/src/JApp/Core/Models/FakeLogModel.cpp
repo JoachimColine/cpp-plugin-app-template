@@ -19,6 +19,51 @@ FakeLogModel::FakeLogModel(QObject *parent)
                     "A fake message",
                    "Fake thread id" }
         );
+        addLog(Log{QDateTime::currentDateTime(),
+                   "Fake category",
+                   LogLevel::Debug,
+                   "FakeFile.cpp",
+                   "fakeFunction",
+                   0,
+                   "A fake message",
+                   "Fake thread id" }
+        );
+        addLog(Log{QDateTime::currentDateTime(),
+                   "Fake category",
+                   LogLevel::Warning,
+                   "FakeFile.cpp",
+                   "fakeFunction",
+                   0,
+                   "A fake message",
+                   "Fake thread id" }
+        );
+        addLog(Log{QDateTime::currentDateTime(),
+                   "Fake category",
+                   LogLevel::Critical,
+                   "FakeFile.cpp",
+                   "fakeFunction",
+                   0,
+                   "A fake message",
+                   "Fake thread id" }
+        );
+        addLog(Log{QDateTime::currentDateTime(),
+                   "Fake category",
+                   LogLevel::Unknown,
+                   "FakeFile.cpp",
+                   "fakeFunction",
+                   0,
+                   "A fake message",
+                   "Fake thread id" }
+        );
+        addLog(Log{QDateTime::currentDateTime(),
+                   "Fake category",
+                   LogLevel::Fatal,
+                   "FakeFile.cpp",
+                   "fakeFunction",
+                   0,
+                   "A fake message",
+                   "Fake thread id" }
+               );
     });
     m_timer->start();
 }
