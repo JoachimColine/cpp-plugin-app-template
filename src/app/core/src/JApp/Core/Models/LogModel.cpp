@@ -39,6 +39,7 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
         case FunctionRole:  return log.function;
         case LineRole:      return log.line;
         case MessageRole:   return log.message;
+        case ThreadRole:    return log.threadId;
         default:            return QVariant();
     }
 }

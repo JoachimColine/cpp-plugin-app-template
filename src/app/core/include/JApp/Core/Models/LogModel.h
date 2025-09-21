@@ -18,7 +18,8 @@ public:
         FileRole,
         FunctionRole,
         LineRole,
-        MessageRole
+        MessageRole,
+        ThreadRole
     };
 
     explicit LogModel(QObject *parent = nullptr);

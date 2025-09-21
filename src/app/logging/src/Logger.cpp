@@ -189,7 +189,8 @@ void Logger::messageHandler(QtMsgType type, const QMessageLogContext& context, c
         context.file ? QString(context.file) : QString("?"),
         context.function ? QString(context.function) : QString("?"),
         context.line,
-        message
+        message,
+        QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16)
     };
     
     s_instance->handleLog(log);

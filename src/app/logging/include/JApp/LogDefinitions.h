@@ -37,6 +37,7 @@ struct Log {
     QString   function;
     int       line;
     QString   message;
+    QString   threadId;
 };
 
 }

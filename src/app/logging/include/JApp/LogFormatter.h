@@ -51,7 +51,7 @@ const char* const Unknown = "?    ";
         funcInfo += QString(":%1").arg(log.line);
         parts << QString("%1").arg(funcInfo);
         parts << log.message;
-        //parts << QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16);
+        parts << log.threadId;
         return parts.join(" | ");
 	}
 }
