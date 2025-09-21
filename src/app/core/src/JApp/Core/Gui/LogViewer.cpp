@@ -54,6 +54,9 @@ void LogViewer::buildWidget()
 
     m_logTableView->setModel(m_logModel);
 
+    m_logTableView->setWordWrap(true);
+    m_logTableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     m_logTableView->setColumnWidth(0, 135);
     m_logTableView->setColumnWidth(1, 70);
     m_logTableView->setColumnWidth(2, 50);
