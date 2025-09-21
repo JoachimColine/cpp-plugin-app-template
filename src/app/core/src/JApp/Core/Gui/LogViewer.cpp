@@ -1,6 +1,7 @@
 #include <JApp/Core/Gui/LogViewer.h>
 #include <JApp/Core/Models/FileWatcherLogModel.h>
 #include <JApp/Log.h>
+#include <QHeaderView>
 
 using namespace JApp::Core::Gui;
 
@@ -35,11 +36,15 @@ void LogViewer::buildWidget()
     m_headerLabel->setFont(headerFont);
     m_mainLayout->addWidget(m_headerLabel);
 
-    m_logListView = new QListView(this);
-    m_logListView->setAlternatingRowColors(true);
-    m_logListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    m_logListView->setModel(m_logModel);
-    m_mainLayout->addWidget(m_logListView);
+    m_logTableView = new QTableView(this);
+    m_logTableView->setAlternatingRowColors(true);
+    m_logTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_logTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_logTableView->setSortingEnabled(true);
+    m_logTableView->horizontalHeader()->setStretchLastSection(true);
+    m_logTableView->verticalHeader()->setVisible(false);
+    m_logTableView->setModel(m_logModel);
+    m_mainLayout->addWidget(m_logTableView);
 
     setLayout(m_mainLayout);
     resize(800, 600);

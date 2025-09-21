@@ -3,7 +3,7 @@
 #include <JApp/Core/Models/LogModel.h>
 #include <JApp/Logger.h>
 #include <QWidget>
-#include <QListView>
+#include <QTableView>
 #include <QVBoxLayout>
 #include <QLabel>
 
@@ -24,7 +24,7 @@ private:
 
     QVBoxLayout* m_mainLayout;
     QLabel* m_headerLabel;
-    QListView* m_logListView;
+    QTableView* m_logTableView;
     JApp::Logger* m_logger;
     JApp::Core::Models::LogModel *m_logModel;
 };
