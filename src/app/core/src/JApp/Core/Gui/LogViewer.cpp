@@ -45,16 +45,24 @@ void LogViewer::buildWidget()
     m_logTableView->setAlternatingRowColors(true);
     m_logTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_logTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_logTableView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     m_logTableView->setSortingEnabled(true);
+    m_logTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     m_logTableView->horizontalHeader()->setStretchLastSection(true);
     m_logTableView->verticalHeader()->setVisible(false);
     m_logTableView->setItemDelegateForColumn(2, new LogLevelDelegate(this));
 
     m_logTableView->setModel(m_logModel);
+
+    m_logTableView->setColumnWidth(0, 135);
+    m_logTableView->setColumnWidth(1, 70);
+    m_logTableView->setColumnWidth(2, 50);
+    m_logTableView->setColumnWidth(5, 20);
+
     m_mainLayout->addWidget(m_logTableView);
 
     setLayout(m_mainLayout);
-    resize(800, 600);
+    resize(1200, 700);
 
     LOG_INFO() << "ok";
 }
