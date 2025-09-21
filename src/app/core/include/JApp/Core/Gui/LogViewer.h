@@ -15,6 +15,7 @@ class LogViewer : public QWidget
 
 public:
     explicit LogViewer(QWidget *parent = nullptr,
+                       JApp::Core::Models::LogModel* logModel = nullptr,
                        JApp::Logger* logger = &JApp::Logger::instance());
     ~LogViewer() override;
 

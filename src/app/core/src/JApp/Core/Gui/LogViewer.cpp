@@ -6,8 +6,10 @@
 using namespace JApp::Core::Gui;
 
 LogViewer::LogViewer(QWidget *parent,
+                     JApp::Core::Models::LogModel* logModel,
                      JApp::Logger* logger)
     : QWidget(parent)
+    , m_logModel(logModel)
     , m_logger(logger)
 {
     initialize();
@@ -20,9 +22,11 @@ LogViewer::~LogViewer()
 
 void LogViewer::initialize()
 {
-    auto logModel = new Models::FileWatcherLogModel(this);
-    logModel->setLogFilePath(m_logger->logFilePath());
-    m_logModel = logModel;
+    if (m_logModel == nullptr) {
+        auto logModel = new Models::FileWatcherLogModel(this);
+        logModel->setLogFilePath(m_logger->logFilePath());
+        m_logModel = logModel;
+    }
 }
 
 void LogViewer::buildWidget()
