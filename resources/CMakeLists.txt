@@ -1,3 +1,0 @@
-# Add resources
-set(RESOURCES_FILES)
-list(APPEND RESOURCES_FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc)

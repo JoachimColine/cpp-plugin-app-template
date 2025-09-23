@@ -1,7 +1,16 @@
-* {
-    font-family: arial;
-    font-size: 14px;
-    color: red
+QTableView {
+  font-size: 9pt;
+  alternate-background-color: #f5f5f5; // Lighter alternate row color
+  selection-background-color: #3a7eba; // Default selection color
 }
-
-QLabel { color: blue }
+QTableView::item:selected {
+  background-color: #3a7eba;
+  color: white;
+}
+QTableView::item:selected:!focus {
+  background-color: #a0c4e8;
+  color: black;
+}
+QTableView::item:hover:!selected {
+  background-color: #e0e8f0;
+}
