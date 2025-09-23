@@ -19,6 +19,9 @@ public:
                        JApp::Logger* logger = &JApp::Logger::instance());
     ~LogViewer() override;
 
+private slots:
+    void onRowClicked(const QModelIndex& index);
+
 private:
     void initialize();
     void buildWidget();

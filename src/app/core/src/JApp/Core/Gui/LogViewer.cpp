@@ -21,6 +21,13 @@ LogViewer::~LogViewer()
 {
 }
 
+void LogViewer::onRowClicked(const QModelIndex &index)
+{
+    if (index.isValid()) {
+        m_logTableView->resizeRowToContents(index.row());
+    }
+}
+
 void LogViewer::initialize()
 {
     if (m_logModel == nullptr) {
@@ -45,7 +52,6 @@ void LogViewer::buildWidget()
     m_logTableView->setAlternatingRowColors(true);
     m_logTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_logTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    m_logTableView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     m_logTableView->setSortingEnabled(true);
     m_logTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     m_logTableView->horizontalHeader()->setStretchLastSection(true);
@@ -55,7 +61,6 @@ void LogViewer::buildWidget()
     m_logTableView->setModel(m_logModel);
 
     m_logTableView->setWordWrap(true);
-    m_logTableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     m_logTableView->setColumnWidth(0, 135);
     m_logTableView->setColumnWidth(1, 70);
@@ -67,5 +72,5 @@ void LogViewer::buildWidget()
     setLayout(m_mainLayout);
     resize(1200, 700);
 
-    LOG_INFO() << "ok";
+    connect(m_logTableView, &QTableView::clicked, this, &LogViewer::onRowClicked);
 }
