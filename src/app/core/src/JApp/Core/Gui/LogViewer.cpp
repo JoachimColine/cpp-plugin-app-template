@@ -41,13 +41,6 @@ void LogViewer::buildWidget()
 {
     m_mainLayout = new QVBoxLayout(this);
 
-    m_headerLabel = new QLabel("Log Viewer", this);
-    QFont headerFont = m_headerLabel->font();
-    headerFont.setBold(true);
-    headerFont.setPointSize(headerFont.pointSize() + 2);
-    m_headerLabel->setFont(headerFont);
-    m_mainLayout->addWidget(m_headerLabel);
-
     m_logTableView = new QTableView(this);
     m_logTableView->setAlternatingRowColors(true);
     m_logTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -56,21 +49,21 @@ void LogViewer::buildWidget()
     m_logTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     m_logTableView->horizontalHeader()->setStretchLastSection(true);
     m_logTableView->verticalHeader()->setVisible(false);
-    m_logTableView->setItemDelegateForColumn(2, new LogLevelDelegate(this));
+    m_logTableView->setItemDelegateForColumn(1, new LogLevelDelegate(this));
 
     m_logTableView->setModel(m_logModel);
 
     m_logTableView->setWordWrap(true);
 
     m_logTableView->setColumnWidth(0, 135);
-    m_logTableView->setColumnWidth(1, 70);
-    m_logTableView->setColumnWidth(2, 50);
-    m_logTableView->setColumnWidth(5, 20);
+    m_logTableView->setColumnWidth(1, 50);
+    m_logTableView->setColumnWidth(4, 20);
 
     m_mainLayout->addWidget(m_logTableView);
 
     setLayout(m_mainLayout);
-    resize(1200, 700);
+    resize(1600, 800);
 
     connect(m_logTableView, &QTableView::clicked, this, &LogViewer::onRowClicked);
+
 }

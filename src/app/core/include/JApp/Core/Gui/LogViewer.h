@@ -5,7 +5,6 @@
 #include <QWidget>
 #include <QTableView>
 #include <QVBoxLayout>
-#include <QLabel>
 
 namespace JApp::Core::Gui {
 
@@ -27,7 +26,6 @@ private:
     void buildWidget();
 
     QVBoxLayout* m_mainLayout;
-    QLabel* m_headerLabel;
     QTableView* m_logTableView;
     JApp::Logger* m_logger;
     JApp::Core::Models::LogModel *m_logModel;
