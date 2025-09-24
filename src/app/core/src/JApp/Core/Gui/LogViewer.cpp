@@ -49,6 +49,7 @@ void LogViewer::buildWidget()
     m_logTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     m_logTableView->horizontalHeader()->setStretchLastSection(true);
     m_logTableView->verticalHeader()->setVisible(false);
+    m_logTableView->verticalHeader()->setDefaultSectionSize(0);
     m_logTableView->setItemDelegateForColumn(1, new LogLevelDelegate(this));
 
     m_logTableView->setModel(m_logModel);
