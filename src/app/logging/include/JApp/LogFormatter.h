@@ -46,7 +46,8 @@ const char* const Unknown = "?    ";
             log.timestamp = QDateTime::fromString(parts[0], "yyyy-MM-dd hh:mm:ss.zzz");
             log.level = logLevelFromString(parts[1]);
             log.category = parts[2];
-            QString funcInfo = parts[3];
+            log.file = parts[3];
+            QString funcInfo = parts[4];
             int colonPos = funcInfo.lastIndexOf(':');
             if (colonPos > 0) {
                 log.function = funcInfo.left(colonPos);
@@ -55,8 +56,8 @@ const char* const Unknown = "?    ";
                 log.function = funcInfo;
                 log.line = 0;
             }
-            log.message = parts[4];
-            log.threadId = parts[5];
+            log.message = parts[5];
+            log.threadId = parts[6];
         }
 
         return log;
@@ -67,6 +68,7 @@ const char* const Unknown = "?    ";
         parts << log.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz");
         parts << QString("%1").arg(logLevelToString(log.level));
         parts << QString("%1").arg(log.category);
+        parts << QString("%1").arg(log.file);
         QString funcInfo = log.function;
         funcInfo += QString(":%1").arg(log.line);
         parts << QString("%1").arg(funcInfo);
