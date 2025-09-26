@@ -204,7 +204,7 @@ LogLevel Logger::qtMsgTypeToLogLevel(QtMsgType type)
         case QtWarningMsg:  return LogLevel::Warning;
         case QtCriticalMsg: return LogLevel::Critical;
         case QtFatalMsg:    return LogLevel::Fatal;
-        default:            return LogLevel::Debug;
+        default:            return LogLevel::Unknown;
     }
 }
 
