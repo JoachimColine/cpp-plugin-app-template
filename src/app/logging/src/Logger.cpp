@@ -3,11 +3,29 @@
 #include <QThread>
 #include <QFileInfo>
 #include <QDebug>
+#include <QRegularExpression>
 #include <JApp/Log.h>
 #include <JApp/LogFormatter.h>
 #include <iostream>
 
 using namespace JApp;
+
+inline QString simplifyContextFile(const QString &fileName)
+{
+    return QFileInfo(fileName).fileName();
+}
+
+inline QString simplifyContextFunction(const QString &functionName)
+{
+    QRegularExpression functionNameRegex(R"((?:.*\:\:)?([^\s:]+)\s*\()");
+    QRegularExpressionMatch match = functionNameRegex.match(functionName);
+
+    if (match.hasMatch()) {
+        return match.captured(1);
+    }
+
+    return functionName;
+}
 
 Logger* Logger::s_instance = nullptr;
 
@@ -186,8 +204,8 @@ void Logger::messageHandler(QtMsgType type, const QMessageLogContext& context, c
         QDateTime::currentDateTime(),
         context.category ? QString(context.category) : QString("?"),
         qtMsgTypeToLogLevel(type),
-        context.file ? QString(context.file) : QString("?"),
-        context.function ? QString(context.function) : QString("?"),
+        context.file ? simplifyContextFile(QString(context.file)) : QString("?"),
+        context.function ? simplifyContextFunction(QString(context.function)) : QString("?"),
         context.line,
         message,
         QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16)
