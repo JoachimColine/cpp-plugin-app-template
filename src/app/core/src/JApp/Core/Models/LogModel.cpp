@@ -92,6 +92,7 @@ QHash<int, QByteArray> LogModel::roleNames() const {
     roles[FunctionRole]  = "function";
     roles[LineRole]      = "line";
     roles[MessageRole]   = "message";
+    roles[ThreadRole]    = "thread";
     return roles;
 }
 
