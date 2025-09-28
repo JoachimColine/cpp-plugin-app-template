@@ -28,6 +28,16 @@ int main(int argc, char *argv[])
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
     v->show();
 
+    QTimer* t = new QTimer();
+    t->setInterval(500);
+    t->setSingleShot(false);
+    QObject::connect(t, &QTimer::timeout, t, [](){
+        LOG_WARN() << "Hi from main";
+        LOG_INFO() << "Hi from main";
+        LOG_CRITICAL() << "Hi from main";
+    });
+    t->start();
+
     return app.exec();
 }
 
