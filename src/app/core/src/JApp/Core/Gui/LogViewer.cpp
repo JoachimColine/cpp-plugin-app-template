@@ -1,6 +1,6 @@
 #include <JApp/Core/Gui/LogViewer.h>
 #include <JApp/Core/Gui/LogLevelDelegate.h>
-#include <JApp/Core/Models/FileWatcherLogModel.h>
+#include <JApp/Core/Models/LoggerWatcherLogModel.h>
 #include <JApp/Log.h>
 #include <QHeaderView>
 
@@ -31,8 +31,7 @@ void LogViewer::onRowClicked(const QModelIndex &index)
 void LogViewer::initialize()
 {
     if (m_logModel == nullptr) {
-        auto logModel = new Models::FileWatcherLogModel(this);
-        logModel->setLogFilePath(m_logger->logFilePath());
+        auto logModel = new Models::LoggerWatcherLogModel(*m_logger, this);
         m_logModel = logModel;
     }
 }

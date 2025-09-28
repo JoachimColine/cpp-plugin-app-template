@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     app.setStyleSheet(loadStyleSheet());
 
-    JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer(nullptr, new JApp::Core::Models::FakeLogModel());
+    JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
     v->show();
 
     return app.exec();

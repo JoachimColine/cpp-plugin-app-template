@@ -177,10 +177,18 @@ void Logger::flushLogs()
 {
     if (!m_initialized || !m_flushNeeded) return;
 
-    QMutexLocker locker(&m_mutex);
-    if (m_logStream) {
-        m_logStream->flush();
-        m_flushNeeded = false;
+    bool flushed = false;
+
+    {
+        QMutexLocker locker(&m_mutex);
+        if (m_logStream) {
+            m_logStream->flush();
+            m_flushNeeded = false;
+            flushed = true;
+        }
+    } // Release mutex.
+
+    if (flushed) {
         emit logsFlushed();
     }
 }
