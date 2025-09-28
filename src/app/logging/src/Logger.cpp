@@ -33,6 +33,7 @@ Logger::Logger(QObject* parent)
     : QObject(parent)
     , m_flushTimer(new QTimer(this))
     , m_initialized(false)
+    , m_flushNeeded(false)
 {
 }
 
@@ -70,19 +71,16 @@ void Logger::initialize(const LogConfig& config)
 
         m_config = config;
 
-        // Set default log directory if not specified
         if (m_config.logDirectory.isEmpty()) {
             m_config.logDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/logs";
         }
 
         ensureLogDirectory();
 
-        // Setup file logging if enabled
         if (hasFlag(m_config.target, OutputTarget::File)) {
             createLogFile();
         }
 
-        // Setup Qt message handler
         setupMessageHandler();
 
         m_flushTimer->setInterval(m_config.flushIntervalMs);
@@ -119,7 +117,6 @@ void Logger::shutdown()
         m_logFile.reset();
     }
     
-    // Restore default message handler
     qInstallMessageHandler(nullptr);
 }
 
@@ -150,42 +147,41 @@ void Logger::handleLog(const Log& log)
 {
     if (!m_initialized) return;
 
-    // Check if we should log this level
     if (log.level < m_config.minLevel) {
         return;
     }
     
     QMutexLocker locker(&m_mutex);
     
-    QString formattedMessage = LogFormatter::logToString(log);
+    QString formattedLog = LogFormatter::logToString(log);
     
-    // Console output
     if (hasFlag(m_config.target, OutputTarget::Console)) {
         if (log.level >= LogLevel::Critical) {
-            std::cerr << formattedMessage.toStdString() << std::endl;
+            std::cerr << formattedLog.toStdString() << std::endl;
         } else {
-            std::cout << formattedMessage.toStdString() << std::endl;
+            std::cout << formattedLog.toStdString() << std::endl;
         }
     }
     
-    // File output
     if (hasFlag(m_config.target, OutputTarget::File) && m_logStream) {
-        // Check file size and rotate if necessary
         if (m_logFile->size() > m_config.maxFileSize) {
             rotateLogFile();
         }
         
-        *m_logStream << formattedMessage << Qt::endl;
+        *m_logStream << formattedLog << Qt::endl;
+        m_flushNeeded = true;
     }
 }
 
 void Logger::flushLogs()
 {
-    if (!m_initialized) return;
+    if (!m_initialized || !m_flushNeeded) return;
 
     QMutexLocker locker(&m_mutex);
     if (m_logStream) {
         m_logStream->flush();
+        m_flushNeeded = false;
+        emit logsFlushed();
     }
 }
 

@@ -33,6 +33,7 @@ public:
 
 signals:
     void logFilePathChanged(const QString& logFilePath);
+    void logsFlushed();
 
 private slots:
     void flushLogs();
@@ -53,6 +54,7 @@ private:
 
 private:
     bool m_initialized;
+    bool m_flushNeeded;
     LogConfig m_config;
     std::unique_ptr<QFile> m_logFile;
     std::unique_ptr<QTextStream> m_logStream;
