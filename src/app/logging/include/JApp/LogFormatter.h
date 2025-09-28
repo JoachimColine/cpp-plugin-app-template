@@ -1,16 +1,36 @@
 #pragma once
 
-#include <JApp/LogDefinitions.h> 
+#include <JApp/LogDefinitions.h>
+#include <QFileInfo>
+#include <QRegularExpression>
 
 namespace JApp::LogFormatter {
-namespace Constants {
-const char* const Debug   = "DEBUG";
-const char* const Info    = "INFO ";
-const char* const Warn    = "WARN ";
-const char* const Error   = "ERROR";
-const char* const Fatal   = "FATAL";
-const char* const Unknown = "?    ";
-}
+    namespace Constants {
+        const char* const Debug   = "DEBUG";
+        const char* const Info    = "INFO ";
+        const char* const Warn    = "WARN ";
+        const char* const Error   = "ERROR";
+        const char* const Fatal   = "FATAL";
+        const char* const Unknown = "?    ";
+    }
+
+    QRegularExpression logFunctionNameRegex(R"((?:.*\:\:)?([^\s:]+)\s*\()");
+
+    static QString simplifyLogFileName(const QString &fileName)
+    {
+        return QFileInfo(fileName).fileName();
+    }
+
+    static QString simplifyLogFunctionName(const QString &functionName)
+    {
+        QRegularExpressionMatch match = logFunctionNameRegex.match(functionName);
+
+        if (match.hasMatch()) {
+            return match.captured(1);
+        }
+
+        return functionName;
+    }
 
     static QString logLevelToString(const LogLevel& level) {
         switch (level) {

@@ -10,23 +10,6 @@
 
 using namespace JApp;
 
-inline QString simplifyContextFile(const QString &fileName)
-{
-    return QFileInfo(fileName).fileName();
-}
-
-inline QString simplifyContextFunction(const QString &functionName)
-{
-    QRegularExpression functionNameRegex(R"((?:.*\:\:)?([^\s:]+)\s*\()");
-    QRegularExpressionMatch match = functionNameRegex.match(functionName);
-
-    if (match.hasMatch()) {
-        return match.captured(1);
-    }
-
-    return functionName;
-}
-
 Logger* Logger::s_instance = nullptr;
 
 Logger::Logger(QObject* parent)
@@ -208,8 +191,8 @@ void Logger::messageHandler(QtMsgType type, const QMessageLogContext& context, c
         QDateTime::currentDateTime(),
         context.category ? QString(context.category) : QString("?"),
         qtMsgTypeToLogLevel(type),
-        context.file ? simplifyContextFile(QString(context.file)) : QString("?"),
-        context.function ? simplifyContextFunction(QString(context.function)) : QString("?"),
+        context.file ? LogFormatter::simplifyLogFileName(QString(context.file)) : QString("?"),
+        context.function ? LogFormatter::simplifyLogFunctionName(QString(context.function)) : QString("?"),
         context.line,
         message,
         QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16)
