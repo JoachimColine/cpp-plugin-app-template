@@ -14,7 +14,7 @@ namespace JApp::LogFormatter {
         const char* const Unknown = "?    ";
     }
 
-    QRegularExpression logFunctionNameRegex(R"((?:.*\:\:)?([^\s:]+)\s*\()");
+    static QRegularExpression logFunctionNameRegex(R"((?:.*\:\:)?([^\s:]+)\s*\()");
 
     static QString simplifyLogFileName(const QString &fileName)
     {
