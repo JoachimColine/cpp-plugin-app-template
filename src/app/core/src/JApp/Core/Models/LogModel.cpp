@@ -5,12 +5,21 @@ namespace JApp::Core::Models {
 
 LogModel::LogModel(QObject *parent)
     : QAbstractListModel(parent)
-{}
+{
+    m_logs.clear();
+    m_maxLogCount = -1;
+}
 
 void LogModel::addLog(const Log& log) {
     beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size());
     m_logs.append(log);
     endInsertRows();
+
+    if (m_maxLogCount > 0 && m_logs.size() > m_maxLogCount) {
+        beginRemoveRows(QModelIndex(), 0, m_logs.size() - m_maxLogCount - 1);
+        m_logs.remove(0, m_logs.size() - m_maxLogCount);
+        endRemoveRows();
+    }
 }
 
 void LogModel::clear() {
@@ -92,6 +101,20 @@ QHash<int, QByteArray> LogModel::roleNames() const {
     roles[MessageRole]   = "message";
     roles[ThreadRole]    = "thread";
     return roles;
+}
+
+int LogModel::maxLogCount() const
+{
+    return m_maxLogCount;
+}
+
+void LogModel::setMaxLogCount(int count)
+{
+    if (m_maxLogCount == count)
+        return;
+
+    m_maxLogCount = count;
+    emit maxLogCountChanged(m_maxLogCount);
 }
 
 }
