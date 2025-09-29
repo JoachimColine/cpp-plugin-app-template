@@ -1,10 +1,10 @@
 #include <QApplication>
 #include <QFile>
-#include <QDebug>
+#include <QScreen>
+#include <QSysInfo>
 #include <JApp/Logger.h>
 #include <JApp/Log.h>
 #include <JApp/Core/Gui/LogViewer.h>
-#include <JApp/Core/Models/FakeLogModel.h>
 
 QString loadStyleSheet()
 {
@@ -20,14 +20,22 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // Initialize logger
     JApp::Logger& logger = JApp::Logger::instance();
     logger.initialize();
 
+    // Log some useful information
+    LOG_INFO() << "Build: " << __DATE__ << __TIME__ << (sizeof(void*) == 8 ? "64-bit" : "32-bit");
+    LOG_INFO() << "Platform: " << QSysInfo::prettyProductName() << "(" << QSysInfo::kernelVersion() << ")";
+    LOG_INFO() << "Qt version: " << QT_VERSION_STR;
+    LOG_INFO() << "Screen: " << QGuiApplication::primaryScreen()->geometry().width() << "x" << QGuiApplication::primaryScreen()->geometry().height();
+
+    // Style the application
     app.setStyleSheet(loadStyleSheet());
 
+    // Temporary code to show log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
     v->show();
-
     QTimer* t = new QTimer();
     t->setInterval(500);
     t->setSingleShot(false);
