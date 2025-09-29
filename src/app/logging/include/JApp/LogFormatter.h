@@ -76,8 +76,8 @@ namespace JApp::LogFormatter {
                 log.function = funcInfo;
                 log.line = 0;
             }
-            log.message = parts[5];
-            log.threadId = parts[6];
+            log.threadId = parts[5];
+            log.message = parts[6];
         }
 
         return log;
@@ -92,8 +92,8 @@ namespace JApp::LogFormatter {
         QString funcInfo = log.function;
         funcInfo += QString(":%1").arg(log.line);
         parts << QString("%1").arg(funcInfo);
-        parts << log.message;
         parts << log.threadId;
+        parts << log.message;
         return parts.join(" | ");
 	}
 }
