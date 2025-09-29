@@ -1,15 +1,24 @@
 #include "JApp/Plugins/PluginManager.h"
+#include "JApp/Plugins/Plugin.h"
+#include <JApp/Log.h>
+
+#include <QPluginLoader>
+#include <QDir>
+#include <QFileInfo>
 
 using namespace JApp;
 
 PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
+    , m_directory(directory)
+    , m_loadingProgress(0.0)
+    , m_unloadingProgress(0.0)
 {
 
 }
 
 PluginManager::~PluginManager()
 {
-
+    unloadAllPlugins();
 }
 
 QString JApp::PluginManager::directory() const
@@ -29,12 +38,75 @@ qreal JApp::PluginManager::unloadingProgress() const
 
 bool JApp::PluginManager::loadAllPlugins()
 {
+    QDir pluginsDir(m_directory);
+
+#if defined(Q_OS_WIN)
+    const QStringList filters = {"*.dll"};
+#else
+    const QStringList filters = {"*.so"};
+#endif
+
+    QFileInfoList files = pluginsDir.entryInfoList(filters, QDir::Files);
+
+    if (files.isEmpty()) {
+        LOG_WARN() << "No plugins found in directory:" << m_directory;
+        return false;
+    }
+
+    int totalFiles = files.size();
+    int loadedCount = 0;
+
+    for (const QFileInfo &fileInfo : files) {
+        setLoadingProgress(static_cast<qreal>(loadedCount) / totalFiles);
+
+        QString filePath = fileInfo.absoluteFilePath();
+        LOG_DEBUG() << "Attempting to load plugin:" << filePath;
+
+        QPluginLoader *loader = new QPluginLoader(filePath);
+
+        if (!loader->load()) {
+            LOG_WARN() << "Failed to load plugin " << filePath << ":" << loader->errorString();
+            delete loader;
+            continue;
+        }
+
+        QObject *plugin = loader->instance();
+        if (!plugin) {
+            LOG_WARN() << "Failed to get plugin instance:" << filePath;
+            loader->unload();
+            delete loader;
+            continue;
+        }
+
+        JApp::Plugin *jappPlugin = qobject_cast<JApp::Plugin*>(plugin);
+        if (!jappPlugin) {
+            LOG_WARN() << "Plugin doesn't implement JApp::Plugin interface:" << filePath;
+            loader->unload();
+            delete loader;
+            continue;
+        }
+
+        LOG_DEBUG() << "Initializing plugin:" << jappPlugin->name();
+        if (!jappPlugin->initialize()) {
+            LOG_WARN() << "Plugin initialization failed:" << jappPlugin->name();
+            loader->unload();
+            delete loader;
+            continue;
+        }
+
+        m_loaders.append(loader);
+        m_plugins.append(jappPlugin);
+        loadedCount++;
+
+        LOG_DEBUG() << "Successfully loaded plugin:" << jappPlugin->name();
+    }
+
     return true;
 }
 
 bool JApp::PluginManager::unloadAllPlugins()
 {
-    return true;
+    return true; // TODO
 }
 
 QList<JApp::Plugin*> JApp::PluginManager::loadedPlugins() const
