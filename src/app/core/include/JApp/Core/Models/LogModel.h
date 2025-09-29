@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QMultiMap>
 #include <JApp/LogDefinitions.h>
 
 namespace JApp::Core::Models {
@@ -33,7 +32,7 @@ protected:
     void addLog(const Log& log);
     void clear();
 
-    QMultiMap<QDateTime, Log> m_logs;
+    QVector<Log> m_logs;
 };
 
 }

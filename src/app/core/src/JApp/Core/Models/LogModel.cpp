@@ -9,7 +9,7 @@ LogModel::LogModel(QObject *parent)
 
 void LogModel::addLog(const Log& log) {
     beginInsertRows(QModelIndex(), m_logs.size(), m_logs.size());
-    m_logs.insert(log.timestamp, log);
+    m_logs.append(log);
     endInsertRows();
 }
 
@@ -35,9 +35,7 @@ QVariant LogModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid() || index.row() < 0 || index.row() >= m_logs.size())
         return QVariant();
 
-    auto it = m_logs.constBegin();
-    std::advance(it, index.row());
-    const auto &log = it.value();
+    const auto &log = m_logs.at(index.row());
 
     if (role == Qt::DisplayRole) {
         switch(index.column()) {
