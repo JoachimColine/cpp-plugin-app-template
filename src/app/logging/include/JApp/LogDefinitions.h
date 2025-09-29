@@ -25,7 +25,6 @@ struct LogConfig {
     QString logDirectory;
     QString logFilePrefix = "japp";
     qint64 maxFileSize    = 10 * 1024 * 1024; // 10MB
-    int maxFileCount      = 5;
     int flushIntervalMs   = 1000;
 };
 
