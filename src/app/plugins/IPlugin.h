@@ -13,6 +13,6 @@ public:
     virtual void shutdown() = 0;
 };
 
-Q_DECLARE_INTERFACE(IPlugin, "japp.IPlugin/1.0")
-
 }
+
+Q_DECLARE_INTERFACE(JApp::IPlugin, "japp.iplugin.interface")
