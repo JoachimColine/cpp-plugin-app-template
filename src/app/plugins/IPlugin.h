@@ -8,7 +8,6 @@ class IPlugin
 public:
     virtual ~IPlugin() = default;
     virtual QString name() const = 0;
-    virtual QString version() const = 0;
     virtual bool initialize() = 0;
     virtual void shutdown() = 0;
 };
