@@ -3,10 +3,10 @@
 
 namespace JApp {
 
-class IPlugin
+class Plugin
 {
 public:
-    virtual ~IPlugin() = default;
+    virtual ~Plugin() = default;
     virtual QString name() const = 0;
     virtual bool initialize() = 0;
     virtual void shutdown() = 0;
@@ -14,4 +14,4 @@ public:
 
 }
 
-Q_DECLARE_INTERFACE(JApp::IPlugin, "japp.iplugin.interface")
+Q_DECLARE_INTERFACE(JApp::Plugin, "japp.plugin.interface")

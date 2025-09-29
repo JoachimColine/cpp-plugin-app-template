@@ -8,7 +8,7 @@ class QPluginLoader;
 
 namespace JApp {
 
-class IPlugin;
+class Plugin;
 
 class PluginManager : public QObject
 {
@@ -27,8 +27,9 @@ public:
     qreal unloadingProgress() const;
 
     bool loadAllPlugins();
-    void unloadAllPlugins();
-    QList<JApp::IPlugin*> loadedPlugins() const;
+    bool unloadAllPlugins();
+
+    QList<JApp::Plugin*> loadedPlugins() const;
 
 signals:
     void loadingProgressChanged(qreal progress);
@@ -41,7 +42,9 @@ private:
 private:
     QString m_directory;
     QList<QPluginLoader*> m_loaders;
-    QList<JApp::IPlugin*> m_plugins;
+    QList<JApp::Plugin*> m_plugins;
+    qreal m_loadingProgress;
+    qreal m_unloadingProgress;
 };
 
 }
