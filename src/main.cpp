@@ -38,6 +38,13 @@ int main(int argc, char *argv[])
     });
     t->start();
 
-    return app.exec();
+    // Execute the application
+    int appExitCode = app.exec();
+    LOG_INFO() << "Application exited with code: " << appExitCode;
+
+    // Gracefully stop logger
+    logger.shutdown();
+
+    return appExitCode;
 }
 
