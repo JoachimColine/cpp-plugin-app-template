@@ -26,8 +26,8 @@ public:
     qreal loadingProgress() const;
     qreal unloadingProgress() const;
 
-    bool loadAllPlugins();
-    bool unloadAllPlugins();
+    bool loadPlugins();
+    bool unloadPlugins();
 
     QList<JApp::Plugin*> loadedPlugins() const;
 

@@ -5,6 +5,7 @@
 #include <JApp/Logger.h>
 #include <JApp/Log.h>
 #include <JApp/Core/Gui/LogViewer.h>
+#include <JApp/Plugins/PluginManager.h>
 
 QString loadStyleSheet()
 {
@@ -36,15 +37,11 @@ int main(int argc, char *argv[])
     // Temporary code to show log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
     v->show();
-    QTimer* t = new QTimer();
-    t->setInterval(500);
-    t->setSingleShot(false);
-    QObject::connect(t, &QTimer::timeout, t, [](){
-        LOG_WARN() << "Hi from main";
-        LOG_INFO() << "Hi from main";
-        LOG_CRITICAL() << "Hi from main";
-    });
-    t->start();
+
+    // Load plugins
+    JApp::PluginManager* pm = new JApp::PluginManager(QCoreApplication::applicationDirPath() + "/plugins");
+    pm->loadPlugins();
+
 
     // Execute the application
     int appExitCode = app.exec();

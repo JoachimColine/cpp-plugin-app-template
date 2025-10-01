@@ -1,1 +1,1 @@
-# plugins
+add_subdirectory(foo)

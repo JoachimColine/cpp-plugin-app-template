@@ -18,7 +18,7 @@ PluginManager::PluginManager(QString directory, QObject *parent) : QObject(paren
 
 PluginManager::~PluginManager()
 {
-    unloadAllPlugins();
+    unloadPlugins();
 }
 
 QString JApp::PluginManager::directory() const
@@ -36,7 +36,7 @@ qreal JApp::PluginManager::unloadingProgress() const
     return m_unloadingProgress;
 }
 
-bool JApp::PluginManager::loadAllPlugins()
+bool JApp::PluginManager::loadPlugins()
 {
     QDir pluginsDir(m_directory);
 
@@ -104,7 +104,7 @@ bool JApp::PluginManager::loadAllPlugins()
     return true;
 }
 
-bool JApp::PluginManager::unloadAllPlugins()
+bool JApp::PluginManager::unloadPlugins()
 {
     return true; // TODO
 }
