@@ -1,5 +1,8 @@
+#pragma once
 #include <QtPlugin>
 #include <QString>
+
+#define JAPP_PLUGIN_IDD "japp.plugin.interface"
 
 namespace JApp {
 
@@ -14,4 +17,4 @@ public:
 
 }
 
-Q_DECLARE_INTERFACE(JApp::Plugin, "japp.plugin.interface")
+Q_DECLARE_INTERFACE(JApp::Plugin, JAPP_PLUGIN_IDD)
