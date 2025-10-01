@@ -74,39 +74,17 @@ void Logger::initialize(const LogConfig& config)
 
     m_initialized = true;
 
-    Log initLog {
-        QDateTime::currentDateTime(),
-        "Logger",
-        LogLevel::Info,
-        LogFormatter::simplifyLogFileName(__FILE__),
-        "initialize",
-        __LINE__,
-        QString("Logger initialized - Target: %1, Level: %2, Directory: %3")
-            .arg(static_cast<int>(m_config.target))
-            .arg(static_cast<int>(m_config.minLevel))
-            .arg(m_config.logDirectory),
-        QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16)
-    };
-
-    handleLog(initLog);
+    LOG_INFO() << QString("Logger initialized - Target: %1, Level: %2, Directory: %3")
+                      .arg(static_cast<int>(m_config.target))
+                      .arg(static_cast<int>(m_config.minLevel))
+                      .arg(m_config.logDirectory);
 }
 
 void Logger::shutdown()
 {
     if (!m_initialized) return;
 
-    Log shutdownLog {
-        QDateTime::currentDateTime(),
-        "Logger",
-        LogLevel::Info,
-        LogFormatter::simplifyLogFileName(__FILE__),
-        "shutdown",
-        __LINE__,
-        QString("Logger about to shut down, logs will be removed"),
-        QString("%1").arg(reinterpret_cast<quintptr>(QThread::currentThread()), 0, 16)
-    };
-
-    handleLog(shutdownLog);
+    LOG_INFO() << "Logger about to shut down, logs will be removed";
 
     QMutexLocker locker(&m_mutex);
     
