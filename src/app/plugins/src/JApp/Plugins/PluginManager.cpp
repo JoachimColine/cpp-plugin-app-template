@@ -60,19 +60,20 @@ bool JApp::PluginManager::loadPlugins()
         setLoadingProgress(static_cast<qreal>(loadedCount) / totalFiles);
 
         QString filePath = fileInfo.absoluteFilePath();
-        LOG_DEBUG() << "Attempting to load plugin:" << filePath;
+        QString fileName = fileInfo.fileName();
+        LOG_DEBUG() << "Attempting to load plugin:" << fileName;
 
         QPluginLoader *loader = new QPluginLoader(filePath);
 
         if (!loader->load()) {
-            LOG_WARN() << "Failed to load plugin " << filePath << ":" << loader->errorString();
+            LOG_WARN() << "Failed to load plugin " << fileName << ":" << loader->errorString();
             delete loader;
             continue;
         }
 
         QObject *plugin = loader->instance();
         if (!plugin) {
-            LOG_WARN() << "Failed to get plugin instance:" << filePath;
+            LOG_WARN() << "Failed to get plugin instance:" << fileName;
             loader->unload();
             delete loader;
             continue;
@@ -80,7 +81,7 @@ bool JApp::PluginManager::loadPlugins()
 
         JApp::Plugin *jappPlugin = qobject_cast<JApp::Plugin*>(plugin);
         if (!jappPlugin) {
-            LOG_WARN() << "Plugin doesn't implement JApp::Plugin interface:" << filePath;
+            LOG_WARN() << "Plugin doesn't implement JApp::Plugin interface:" << fileName;
             loader->unload();
             delete loader;
             continue;
