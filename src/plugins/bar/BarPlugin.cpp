@@ -1,5 +1,6 @@
 #include "BarPlugin.h"
 #include <JApp/Log.h>
+#include <QThread>
 
 using namespace Bar;
 
@@ -10,6 +11,8 @@ QString BarPlugin::name() const
 
 bool BarPlugin::initialize()
 {
+    LOG_DEBUG() << "BarPlugin initializing...";
+    QThread::sleep(1);
     LOG_DEBUG() << "BarPlugin initialized";
     return true;
 }

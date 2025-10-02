@@ -1,5 +1,6 @@
 #include "FooPlugin.h"
 #include <JApp/Log.h>
+#include <QThread>
 
 using namespace Foo;
 
@@ -10,6 +11,8 @@ QString FooPlugin::name() const
 
 bool FooPlugin::initialize()
 {
+    LOG_DEBUG() << "FooPlugin initializing...";
+    QThread::sleep(1);
     LOG_DEBUG() << "FooPlugin initialized";
     return true;
 }
