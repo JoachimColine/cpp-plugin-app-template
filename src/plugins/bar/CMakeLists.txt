@@ -6,8 +6,6 @@ qt_add_plugin(bar
 
 target_link_libraries(bar PRIVATE
     JApp
-    Qt6::Core
-    Qt6::Widgets
 )
 
 set_target_properties(bar PROPERTIES
