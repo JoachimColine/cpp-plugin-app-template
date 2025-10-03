@@ -26,7 +26,7 @@ public slots:
 signals:
     void pluginLoaded(QPluginLoader* loader, QObject* plugin);
     void pluginError(QString pluginFile, QString errorMessage);
-    void taskUpdated(qreal loadingProgress, QString loadingMessage);
+    void taskUpdated(QString message);
     void taskFinished(bool success, QString message);
 
 private:

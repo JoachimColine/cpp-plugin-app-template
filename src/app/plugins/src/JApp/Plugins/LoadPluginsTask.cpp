@@ -29,12 +29,10 @@ void LoadPluginsTask::start()
         return;
     }
 
-    int totalFiles = m_files.size();
-    int loadedCount = 0;
     bool success = true;
 
     for (const QFileInfo &fileInfo : std::as_const(m_files)) {
-        emit taskUpdated(static_cast<qreal>(loadedCount) / totalFiles, QString("Loading %1...").arg(fileInfo.fileName()));
+        emit taskUpdated(QString("Loading %1...").arg(fileInfo.fileName()));
 
         QString filePath = fileInfo.absoluteFilePath();
         QString fileName = fileInfo.fileName();
@@ -56,7 +54,6 @@ void LoadPluginsTask::start()
             continue;
         }
 
-        loadedCount++;
         LOG_DEBUG() << "Successfully loaded plugin: " << fileName;
 
         loader->moveToThread(QApplication::instance()->thread());

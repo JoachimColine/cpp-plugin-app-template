@@ -8,12 +8,16 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QThread>
+#include <QTimer>
 
 using namespace JApp;
 
 PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
     , m_directory(directory)
     , m_loadingProgress(0.0)
+    , m_loadingMessage("")
+    , m_initializationProgress(0.0)
+    , m_initializationMessage("")
     , m_loadPluginsTaskThread(nullptr)
     , m_loadPluginsTask(nullptr)
 {
@@ -45,6 +49,16 @@ qreal JApp::PluginManager::loadingProgress() const
 QString PluginManager::loadingMessage() const
 {
     return m_loadingMessage;
+}
+
+qreal PluginManager::initializationProgress() const
+{
+    return m_initializationProgress;
+}
+
+QString PluginManager::initializationMessage() const
+{
+    return m_initializationMessage;
 }
 
 
@@ -91,9 +105,9 @@ bool JApp::PluginManager::loadPlugins()
 }
 
 
-QList<JApp::Plugin*> JApp::PluginManager::loadedPlugins() const
+QList<JApp::Plugin*> JApp::PluginManager::plugins() const
 {
-    return m_plugins;
+    return m_initializedPlugins;
 }
 
 void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
@@ -117,10 +131,11 @@ void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
         return;
     }
 
-    // TODO start initializing
-
     m_loaders.append(loader);
-    m_plugins.append(jappPlugin);
+    m_pluginsToInitialize.enqueue(jappPlugin);
+    if (m_pluginsToInitialize.size() == 1)
+        // Let some time go to process events, e.g. splashscreen info update
+        QTimer::singleShot(10, this, [this]() { processPluginInitializationQueue(); });
 }
 
 void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
@@ -128,9 +143,8 @@ void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
     LOG_WARN() << QString("Error while loading %1: %2").arg(pluginFile).arg(errorMessage);
 }
 
-void PluginManager::onLoadingTaskUpdated(qreal loadingProgress, QString loadingMessage)
+void PluginManager::onLoadingTaskUpdated(QString loadingMessage)
 {
-    setLoadingProgress(loadingProgress);
     setLoadingMessage(loadingMessage);
 
 }
@@ -159,8 +173,28 @@ void PluginManager::setLoadingMessage(const QString &loadingMessage)
     emit loadingMessageChanged(m_loadingMessage);
 }
 
+void PluginManager::setInitializationProgress(qreal progress)
+{
+    if (qFuzzyCompare(progress, m_initializationProgress))
+        return;
+
+    m_initializationProgress = progress;
+    emit initializationProgressChanged(m_initializationProgress);
+}
+
+void PluginManager::setInitializationMessage(const QString &initializationMessage)
+{
+    if (m_initializationMessage == initializationMessage)
+        return;
+
+    m_initializationMessage = initializationMessage;
+    emit initializationMessageChanged(m_initializationMessage);
+}
+
 void JApp::PluginManager::cleanUpTaskThread()
 {
+    LOG_INFO() << "Cleaning up load plugins task thread";
+
     if (m_loadPluginsTask) {
         m_loadPluginsTask = nullptr;
     }
@@ -169,4 +203,18 @@ void JApp::PluginManager::cleanUpTaskThread()
         m_loadPluginsTaskThread->deleteLater();
         m_loadPluginsTaskThread = nullptr;
     }
+}
+
+void PluginManager::processPluginInitializationQueue()
+{
+    if (m_pluginsToInitialize.isEmpty()) {
+        return;
+    }
+    JApp::Plugin* p = m_pluginsToInitialize.dequeue();
+    p->initialize();
+    m_initializedPlugins.append(p);
+    setLoadingProgress(m_initializedPlugins.size());
+
+    // Let some time go to process events, e.g. splashscreen info update
+    QTimer::singleShot(10, this, [this]() { processPluginInitializationQueue(); });
 }
