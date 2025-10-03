@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     // Style the application
     app.setStyleSheet(loadStyleSheet());
 
-    // Temporary code to show log viewer
+    // Show log viewer in standalone widget
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
     v->show();
 

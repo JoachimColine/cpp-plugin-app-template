@@ -1,24 +1,35 @@
 #include "JApp/Plugins/PluginManager.h"
 #include "JApp/Plugins/Plugin.h"
+#include "JApp/Plugins/LoadPluginsTask.h"
 #include <JApp/Log.h>
 
+#include <QTimer>
 #include <QPluginLoader>
 #include <QDir>
 #include <QFileInfo>
+#include <QThread>
 
 using namespace JApp;
 
 PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
     , m_directory(directory)
     , m_loadingProgress(0.0)
-    , m_unloadingProgress(0.0)
+    , m_loadPluginsTaskThread(nullptr)
+    , m_loadPluginsTask(nullptr)
 {
 
 }
 
 PluginManager::~PluginManager()
 {
-    unloadPlugins();
+    if (m_loadPluginsTaskThread && m_loadPluginsTaskThread->isRunning()) {
+        m_loadPluginsTaskThread->quit();
+        m_loadPluginsTaskThread->wait();
+    }
+
+    if (m_loadPluginsTaskThread) {
+        m_loadPluginsTaskThread->deleteLater();
+    }
 }
 
 QString JApp::PluginManager::directory() const
@@ -31,13 +42,21 @@ qreal JApp::PluginManager::loadingProgress() const
     return m_loadingProgress;
 }
 
-qreal JApp::PluginManager::unloadingProgress() const
+QString PluginManager::loadingMessage() const
 {
-    return m_unloadingProgress;
+    return m_loadingMessage;
 }
+
 
 bool JApp::PluginManager::loadPlugins()
 {
+    /* TODO
+    if (false) {
+        LOG_WARN() << "Already loading plugins";
+        return false;
+    }
+    */
+
     QDir pluginsDir(m_directory);
 
 #if defined(Q_OS_WIN)
@@ -53,66 +72,73 @@ bool JApp::PluginManager::loadPlugins()
         return false;
     }
 
-    int totalFiles = files.size();
-    int loadedCount = 0;
+    setLoadingProgress(0.0);
 
-    for (const QFileInfo &fileInfo : files) {
-        setLoadingProgress(static_cast<qreal>(loadedCount) / totalFiles);
+    m_loadPluginsTaskThread = new QThread();
+    m_loadPluginsTask = new LoadPluginsTask();
+    m_loadPluginsTask->setPluginFiles(files);
+    m_loadPluginsTask->moveToThread(m_loadPluginsTaskThread);
 
-        QString filePath = fileInfo.absoluteFilePath();
-        QString fileName = fileInfo.fileName();
-        LOG_DEBUG() << "Attempting to load plugin:" << fileName;
+    connect(m_loadPluginsTask, &LoadPluginsTask::taskUpdated, this, &PluginManager::onLoadingTaskUpdated);
+    connect(m_loadPluginsTask, &LoadPluginsTask::pluginLoaded, this, &PluginManager::onPluginLoaded);
+    connect(m_loadPluginsTask, &LoadPluginsTask::taskFinished, this, &PluginManager::onLoadingTaskFinished);
+    connect(m_loadPluginsTaskThread, &QThread::started, m_loadPluginsTask, &LoadPluginsTask::start);
+    connect(m_loadPluginsTaskThread, &QThread::finished, this, &PluginManager::cleanUpTaskThread);
 
-        QPluginLoader *loader = new QPluginLoader(filePath);
-
-        if (!loader->load()) {
-            LOG_WARN() << "Failed to load plugin " << fileName << ":" << loader->errorString();
-            delete loader;
-            continue;
-        }
-
-        QObject *plugin = loader->instance();
-        if (!plugin) {
-            LOG_WARN() << "Failed to get plugin instance:" << fileName;
-            loader->unload();
-            delete loader;
-            continue;
-        }
-
-        JApp::Plugin *jappPlugin = qobject_cast<JApp::Plugin*>(plugin);
-        if (!jappPlugin) {
-            LOG_WARN() << "Plugin doesn't implement JApp::Plugin interface:" << fileName;
-            loader->unload();
-            delete loader;
-            continue;
-        }
-
-        LOG_DEBUG() << "Initializing plugin:" << jappPlugin->name();
-        if (!jappPlugin->initialize()) {
-            LOG_WARN() << "Plugin initialization failed:" << jappPlugin->name();
-            loader->unload();
-            delete loader;
-            continue;
-        }
-
-        m_loaders.append(loader);
-        m_plugins.append(jappPlugin);
-        loadedCount++;
-
-        LOG_DEBUG() << "Successfully loaded plugin:" << jappPlugin->name();
-    }
+    m_loadPluginsTaskThread->start();
 
     return true;
 }
 
-bool JApp::PluginManager::unloadPlugins()
-{
-    return true; // TODO
-}
 
 QList<JApp::Plugin*> JApp::PluginManager::loadedPlugins() const
 {
-    return QList<JApp::Plugin*>();
+    return m_plugins;
+}
+
+void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
+{
+    if (loader == nullptr) {
+        LOG_WARN() << "Loader is null after loading";
+        return;
+    }
+
+    if (plugin == nullptr) {
+        LOG_WARN() << "Plugin is null after loading: " << loader->fileName();
+        loader->deleteLater();
+        return;
+    }
+
+    JApp::Plugin* jappPlugin = qobject_cast<JApp::Plugin*>(plugin);
+    if (jappPlugin == nullptr) {
+        LOG_WARN() << "Loaded plugin does not implement JApp plugin interface: " << loader->fileName();
+        loader->deleteLater();
+        plugin->deleteLater();
+        return;
+    }
+
+    // TODO start initializing
+
+    m_loaders.append(loader);
+    m_plugins.append(jappPlugin);
+}
+
+void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
+{
+    LOG_WARN() << QString("Error while loading %1: %2").arg(pluginFile).arg(errorMessage);
+}
+
+void PluginManager::onLoadingTaskUpdated(qreal loadingProgress, QString loadingMessage)
+{
+    setLoadingProgress(loadingProgress);
+    setLoadingMessage(loadingMessage);
+
+}
+
+void PluginManager::onLoadingTaskFinished(bool success, QString message)
+{
+    emit pluginsLoaded();
+    setLoadingProgress(1.0);
 }
 
 void JApp::PluginManager::setLoadingProgress(qreal progress)
@@ -124,11 +150,23 @@ void JApp::PluginManager::setLoadingProgress(qreal progress)
     emit loadingProgressChanged(m_loadingProgress);
 }
 
-void JApp::PluginManager::setUnloadingProgress(qreal progress)
+void PluginManager::setLoadingMessage(const QString &loadingMessage)
 {
-    if (qFuzzyCompare(progress, m_unloadingProgress))
+    if (m_loadingMessage == loadingMessage)
         return;
 
-    m_unloadingProgress = progress;
-    emit unloadingProgressChanged(m_unloadingProgress);
+    m_loadingMessage = loadingMessage;
+    emit loadingMessageChanged(m_loadingMessage);
+}
+
+void JApp::PluginManager::cleanUpTaskThread()
+{
+    if (m_loadPluginsTask) {
+        m_loadPluginsTask = nullptr;
+    }
+
+    if (m_loadPluginsTaskThread) {
+        m_loadPluginsTaskThread->deleteLater();
+        m_loadPluginsTaskThread = nullptr;
+    }
 }
