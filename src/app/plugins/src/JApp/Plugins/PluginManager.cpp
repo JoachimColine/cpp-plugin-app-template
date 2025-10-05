@@ -14,6 +14,7 @@ using namespace JApp;
 
 PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
     , m_directory(directory)
+    , m_files(QFileInfoList())
     , m_loadingProgress(0.0)
     , m_loadingMessage("")
     , m_initializationProgress(0.0)
@@ -79,18 +80,16 @@ bool JApp::PluginManager::loadPlugins()
     const QStringList filters = {"*.so"};
 #endif
 
-    QFileInfoList files = pluginsDir.entryInfoList(filters, QDir::Files);
+    m_files = pluginsDir.entryInfoList(filters, QDir::Files);
 
-    if (files.isEmpty()) {
+    if (m_files.isEmpty()) {
         LOG_WARN() << "No plugins found in directory:" << m_directory;
         return false;
     }
 
-    setLoadingProgress(0.0);
-
     m_loadPluginsTaskThread = new QThread();
     m_loadPluginsTask = new LoadPluginsTask();
-    m_loadPluginsTask->setPluginFiles(files);
+    m_loadPluginsTask->setPluginFiles(m_files);
     m_loadPluginsTask->moveToThread(m_loadPluginsTaskThread);
 
     connect(m_loadPluginsTask, &LoadPluginsTask::taskUpdated, this, &PluginManager::onLoadingTaskUpdated);
@@ -132,10 +131,11 @@ void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
     }
 
     m_loaders.append(loader);
+    setLoadingProgress(qreal(m_loaders.count()) / qreal(m_files.count()));
     m_pluginsToInitialize.enqueue(jappPlugin);
     if (m_pluginsToInitialize.size() == 1)
         // Let some time go to process events, e.g. splashscreen info update
-        QTimer::singleShot(10, this, [this]() { processPluginInitializationQueue(); });
+        QTimer::singleShot(50, this, [this]() { processPluginInitializationQueue(); });
 }
 
 void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
@@ -151,7 +151,6 @@ void PluginManager::onLoadingTaskUpdated(QString loadingMessage)
 
 void PluginManager::onLoadingTaskFinished(bool success, QString message)
 {
-    emit pluginsLoaded();
     setLoadingProgress(1.0);
 }
 
@@ -208,13 +207,15 @@ void JApp::PluginManager::cleanUpTaskThread()
 void PluginManager::processPluginInitializationQueue()
 {
     if (m_pluginsToInitialize.isEmpty()) {
+        if (m_initializedPlugins.count() == m_loaders.count()) {
+            emit pluginsLoaded();
+        }
         return;
     }
     JApp::Plugin* p = m_pluginsToInitialize.dequeue();
     p->initialize();
     m_initializedPlugins.append(p);
-    setLoadingProgress(m_initializedPlugins.size());
-
+    setInitializationProgress(qreal(m_initializedPlugins.count()) / qreal(m_files.count()));
     // Let some time go to process events, e.g. splashscreen info update
-    QTimer::singleShot(10, this, [this]() { processPluginInitializationQueue(); });
+    QTimer::singleShot(50, this, [this]() { processPluginInitializationQueue(); });
 }

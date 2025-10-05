@@ -60,6 +60,7 @@ private:
 
 private:
     QString m_directory;
+    QFileInfoList m_files;
     QList<QPluginLoader*> m_loaders;
     QList<JApp::Plugin*> m_initializedPlugins;
     qreal m_loadingProgress;
@@ -68,9 +69,6 @@ private:
     QString m_initializationMessage;
 
     QQueue<JApp::Plugin*> m_pluginsToInitialize;
-
-    int m_loadedPluginsCount;
-    int m_initializedPluginsCount;
 
     QThread* m_loadPluginsTaskThread;
     LoadPluginsTask* m_loadPluginsTask;
