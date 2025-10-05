@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
     <file alias="style.qss">qss/style.qss</file>
+	<file alias="splashscreen.png">images/splashscreen.png</file>
   </qresource>
 </RCC>
