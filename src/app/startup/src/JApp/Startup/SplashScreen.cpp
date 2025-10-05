@@ -46,5 +46,4 @@ void SplashScreen::initialize()
 {
     connect(m_pluginManager, &PluginManager::loadingProgressChanged, this, &SplashScreen::onLoadingProgressChanged);
     connect(m_pluginManager, &PluginManager::initializationProgressChanged, this, &SplashScreen::onInitializationProgressChanged);
-    connect(m_pluginManager, &PluginManager::pluginsLoaded, this, &SplashScreen::close);
 }

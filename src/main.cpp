@@ -6,6 +6,7 @@
 #include <JApp/Log.h>
 #include <JApp/Core/Gui/LogViewer.h>
 #include <JApp/Plugins/PluginManager.h>
+#include <JApp/Startup/SplashScreen.h>
 
 QString loadStyleSheet()
 {
@@ -34,14 +35,25 @@ int main(int argc, char *argv[])
     // Style the application
     app.setStyleSheet(loadStyleSheet());
 
-    // Show log viewer in standalone widget
+    // Launch the app. Later, this will be wrapped inside a dedicated JApp::Launcher class.
+
+    // Instantiate plugin manager
+    JApp::PluginManager* pluginManager = new JApp::PluginManager(QCoreApplication::applicationDirPath() + "/plugins");
+
+    // Instantiate splashscreen to monitor plugins loading
+    QPixmap pic(QString(":/splashscreen.png"));
+    JApp::SplashScreen* splashScreen = new JApp::SplashScreen(pluginManager, pic);
+
+    // When plugins have loaded, display log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
-    v->show();
+    QObject::connect(pluginManager, &JApp::PluginManager::pluginsLoaded, splashScreen, [splashScreen, v]{
+        splashScreen->finish(v);
+        v->show();
+    });
 
-    // Load plugins
-    JApp::PluginManager* pm = new JApp::PluginManager(QCoreApplication::applicationDirPath() + "/plugins");
-    pm->loadPlugins();
-
+    // Let's go
+    splashScreen->show();
+    pluginManager->loadPlugins();
 
     // Execute the application
     int appExitCode = app.exec();
