@@ -208,11 +208,13 @@ void PluginManager::processPluginInitializationQueue()
 {
     if (m_pluginsToInitialize.isEmpty()) {
         if (m_initializedPlugins.count() == m_loaders.count()) {
+            setInitializationMessage("All plugins initialized.");
             emit pluginsLoaded();
         }
         return;
     }
     JApp::Plugin* p = m_pluginsToInitialize.dequeue();
+    setInitializationMessage(QString("Initializing %1...").arg(p->name()));
     p->initialize();
     m_initializedPlugins.append(p);
     setInitializationProgress(qreal(m_initializedPlugins.count()) / qreal(m_files.count()));

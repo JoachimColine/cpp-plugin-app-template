@@ -16,7 +16,9 @@ protected:
 
 private slots:
     void onLoadingProgressChanged(qreal progress);
+    void onLoadingMessageChanged(const QString& loadingMessage);
     void onInitializationProgressChanged(qreal progress);
+    void onInitializationMessageChanged(const QString& initializationMessage);
 
 private:
     void initialize();
@@ -24,6 +26,8 @@ private:
     PluginManager* m_pluginManager;
     qreal m_pluginsLoadingProgress;
     qreal m_pluginsInitializationProgress;
+    QString m_pluginsLoadingMessage;
+    QString m_pluginsInitializationMessage;
 };
 
 }

@@ -62,5 +62,6 @@ void LoadPluginsTask::start()
         emit pluginLoaded(loader, plugin);
     }
 
+    emit taskUpdated("All plugins loaded.");
     emit taskFinished(success, "");
 }
