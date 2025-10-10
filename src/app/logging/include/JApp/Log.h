@@ -20,4 +20,4 @@
 #define LOG_DEBUG()    qCDebug(CURRENT_LOG_CATEGORY())
 #define LOG_INFO()     qCInfo(CURRENT_LOG_CATEGORY())
 #define LOG_WARN()     qCWarning(CURRENT_LOG_CATEGORY())
-#define LOG_CRITICAL() qCCritical(CURRENT_LOG_CATEGORY())
+#define LOG_ERROR()    qCCritical(CURRENT_LOG_CATEGORY())
