@@ -1,6 +1,6 @@
 #include "JApp/Plugins/PluginManager.h"
 #include "JApp/Plugins/Plugin.h"
-#include "JApp/Plugins/LoadPluginsTask.h"
+#include "JApp/Plugins/LoadTask.h"
 #include <JApp/Log.h>
 
 #include <QTimer>
@@ -19,21 +19,21 @@ PluginManager::PluginManager(QString directory, QObject *parent) : QObject(paren
     , m_loadingMessage("")
     , m_initializationProgress(0.0)
     , m_initializationMessage("")
-    , m_loadPluginsTaskThread(nullptr)
-    , m_loadPluginsTask(nullptr)
+    , m_loadTaskThread(nullptr)
+    , m_loadTask(nullptr)
 {
 
 }
 
 PluginManager::~PluginManager()
 {
-    if (m_loadPluginsTaskThread && m_loadPluginsTaskThread->isRunning()) {
-        m_loadPluginsTaskThread->quit();
-        m_loadPluginsTaskThread->wait();
+    if (m_loadTaskThread && m_loadTaskThread->isRunning()) {
+        m_loadTaskThread->quit();
+        m_loadTaskThread->wait();
     }
 
-    if (m_loadPluginsTaskThread) {
-        m_loadPluginsTaskThread->deleteLater();
+    if (m_loadTaskThread) {
+        m_loadTaskThread->deleteLater();
     }
 }
 
@@ -87,18 +87,18 @@ bool JApp::PluginManager::loadPlugins()
         return false;
     }
 
-    m_loadPluginsTaskThread = new QThread();
-    m_loadPluginsTask = new LoadPluginsTask();
-    m_loadPluginsTask->setPluginFiles(m_files);
-    m_loadPluginsTask->moveToThread(m_loadPluginsTaskThread);
+    m_loadTaskThread = new QThread();
+    m_loadTask = new LoadTask();
+    m_loadTask->setPluginFiles(m_files);
+    m_loadTask->moveToThread(m_loadTaskThread);
 
-    connect(m_loadPluginsTask, &LoadPluginsTask::taskUpdated, this, &PluginManager::onLoadingTaskUpdated);
-    connect(m_loadPluginsTask, &LoadPluginsTask::pluginLoaded, this, &PluginManager::onPluginLoaded);
-    connect(m_loadPluginsTask, &LoadPluginsTask::taskFinished, this, &PluginManager::onLoadingTaskFinished);
-    connect(m_loadPluginsTaskThread, &QThread::started, m_loadPluginsTask, &LoadPluginsTask::start);
-    connect(m_loadPluginsTaskThread, &QThread::finished, this, &PluginManager::cleanUpTaskThread);
+    connect(m_loadTask, &LoadTask::taskUpdated, this, &PluginManager::onLoadingTaskUpdated);
+    connect(m_loadTask, &LoadTask::pluginLoaded, this, &PluginManager::onPluginLoaded);
+    connect(m_loadTask, &LoadTask::taskFinished, this, &PluginManager::onLoadingTaskFinished);
+    connect(m_loadTaskThread, &QThread::started, m_loadTask, &LoadTask::start);
+    connect(m_loadTaskThread, &QThread::finished, this, &PluginManager::cleanUpTaskThread);
 
-    m_loadPluginsTaskThread->start();
+    m_loadTaskThread->start();
 
     return true;
 }
@@ -194,13 +194,13 @@ void JApp::PluginManager::cleanUpTaskThread()
 {
     LOG_INFO() << "Cleaning up load plugins task thread";
 
-    if (m_loadPluginsTask) {
-        m_loadPluginsTask = nullptr;
+    if (m_loadTask) {
+        m_loadTask = nullptr;
     }
 
-    if (m_loadPluginsTaskThread) {
-        m_loadPluginsTaskThread->deleteLater();
-        m_loadPluginsTaskThread = nullptr;
+    if (m_loadTaskThread) {
+        m_loadTaskThread->deleteLater();
+        m_loadTaskThread = nullptr;
     }
 }
 

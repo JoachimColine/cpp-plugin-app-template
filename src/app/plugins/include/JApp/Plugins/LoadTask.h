@@ -10,13 +10,13 @@ namespace JApp {
 
 class Plugin;
 
-class LoadPluginsTask : public QObject
+class LoadTask : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit LoadPluginsTask(QObject *parent = nullptr);
-    ~LoadPluginsTask();
+    explicit LoadTask(QObject *parent = nullptr);
+    ~LoadTask();
 
     void setPluginFiles(const QFileInfoList &pluginFiles);
 

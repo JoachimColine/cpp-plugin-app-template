@@ -11,7 +11,7 @@ class QPluginLoader;
 namespace JApp {
 
 class Plugin;
-class LoadPluginsTask;
+class LoadTask;
 
 class PluginManager : public QObject
 {
@@ -70,8 +70,8 @@ private:
 
     QQueue<JApp::Plugin*> m_pluginsToInitialize;
 
-    QThread* m_loadPluginsTaskThread;
-    LoadPluginsTask* m_loadPluginsTask;
+    QThread* m_loadTaskThread;
+    LoadTask* m_loadTask;
 };
 
 }

@@ -1,4 +1,4 @@
-#include "JApp/Plugins/LoadPluginsTask.h"
+#include "JApp/Plugins/LoadTask.h"
 #include <JApp/Log.h>
 
 #include <QApplication>
@@ -8,21 +8,21 @@
 
 using namespace JApp;
 
-LoadPluginsTask::LoadPluginsTask(QObject *parent)
+LoadTask::LoadTask(QObject *parent)
     : QObject(parent)
 {
 }
 
-LoadPluginsTask::~LoadPluginsTask()
+LoadTask::~LoadTask()
 {
 }
 
-void LoadPluginsTask::setPluginFiles(const QFileInfoList &files)
+void LoadTask::setPluginFiles(const QFileInfoList &files)
 {
     m_files = files;
 }
 
-void LoadPluginsTask::start()
+void LoadTask::start()
 {
     if (m_files.isEmpty()) {
         emit taskFinished(false, "No plugin files specified");
