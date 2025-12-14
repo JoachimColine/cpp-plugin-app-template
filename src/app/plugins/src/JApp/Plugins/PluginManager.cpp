@@ -15,8 +15,8 @@ using namespace JApp;
 PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
     , m_directory(directory)
     , m_files(QFileInfoList())
-    , m_loadingProgress(0.0)
-    , m_loadingMessage("")
+    , m_loadProgress(0.0)
+    , m_loadMessage("")
     , m_initializationProgress(0.0)
     , m_initializationMessage("")
     , m_loadTaskThread(nullptr)
@@ -42,14 +42,14 @@ QString JApp::PluginManager::directory() const
     return m_directory;
 }
 
-qreal JApp::PluginManager::loadingProgress() const
+qreal JApp::PluginManager::loadProgress() const
 {
-    return m_loadingProgress;
+    return m_loadProgress;
 }
 
-QString PluginManager::loadingMessage() const
+QString PluginManager::loadMessage() const
 {
-    return m_loadingMessage;
+    return m_loadMessage;
 }
 
 qreal PluginManager::initializationProgress() const
@@ -63,7 +63,7 @@ QString PluginManager::initializationMessage() const
 }
 
 
-bool JApp::PluginManager::loadPlugins()
+bool JApp::PluginManager::load()
 {
     /* TODO
     if (false) {
@@ -131,7 +131,7 @@ void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
     }
 
     m_loaders.append(loader);
-    setLoadingProgress(qreal(m_loaders.count()) / qreal(m_files.count()));
+    setLoadProgress(qreal(m_loaders.count()) / qreal(m_files.count()));
     m_pluginsToInitialize.enqueue(jappPlugin);
     if (m_pluginsToInitialize.size() == 1)
         // Let some time go to process events, e.g. splashscreen info update
@@ -145,31 +145,31 @@ void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
 
 void PluginManager::onLoadingTaskUpdated(QString loadingMessage)
 {
-    setLoadingMessage(loadingMessage);
+    setLoadMessage(loadingMessage);
 
 }
 
 void PluginManager::onLoadingTaskFinished(bool success, QString message)
 {
-    setLoadingProgress(1.0);
+    setLoadProgress(1.0);
 }
 
-void JApp::PluginManager::setLoadingProgress(qreal progress)
+void JApp::PluginManager::setLoadProgress(qreal progress)
 {
-    if (qFuzzyCompare(progress, m_loadingProgress))
+    if (qFuzzyCompare(progress, m_loadProgress))
         return;
 
-    m_loadingProgress = progress;
-    emit loadingProgressChanged(m_loadingProgress);
+    m_loadProgress = progress;
+    emit loadProgressChanged(m_loadProgress);
 }
 
-void PluginManager::setLoadingMessage(const QString &loadingMessage)
+void PluginManager::setLoadMessage(const QString &loadMessage)
 {
-    if (m_loadingMessage == loadingMessage)
+    if (m_loadMessage == loadMessage)
         return;
 
-    m_loadingMessage = loadingMessage;
-    emit loadingMessageChanged(m_loadingMessage);
+    m_loadMessage = loadMessage;
+    emit loadMessageChanged(m_loadMessage);
 }
 
 void PluginManager::setInitializationProgress(qreal progress)
@@ -209,7 +209,7 @@ void PluginManager::processPluginInitializationQueue()
     if (m_pluginsToInitialize.isEmpty()) {
         if (m_initializedPlugins.count() == m_loaders.count()) {
             setInitializationMessage("All plugins initialized.");
-            emit pluginsLoaded();
+            emit loadFinished();
         }
         return;
     }

@@ -15,8 +15,8 @@ protected:
     void drawContents(QPainter* painter) override;
 
 private slots:
-    void onLoadingProgressChanged(qreal progress);
-    void onLoadingMessageChanged(const QString& loadingMessage);
+    void onLoadProgressChanged(qreal progress);
+    void onLoadMessageChanged(const QString& loadMessage);
     void onInitializationProgressChanged(qreal progress);
     void onInitializationMessageChanged(const QString& initializationMessage);
 

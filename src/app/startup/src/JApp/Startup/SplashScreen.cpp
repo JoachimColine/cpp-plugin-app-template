@@ -47,15 +47,15 @@ void SplashScreen::drawContents(QPainter* painter)
     painter->drawText(textRect2, Qt::AlignLeft | Qt::AlignVCenter, initText);
 }
 
-void SplashScreen::onLoadingProgressChanged(qreal progress)
+void SplashScreen::onLoadProgressChanged(qreal progress)
 {
     m_pluginsLoadingProgress = progress;
     update();
 }
 
-void SplashScreen::onLoadingMessageChanged(const QString &loadingMessage)
+void SplashScreen::onLoadMessageChanged(const QString &loadMessage)
 {
-    m_pluginsLoadingMessage = loadingMessage;
+    m_pluginsLoadingMessage = loadMessage;
     update();
 }
 
@@ -73,9 +73,9 @@ void SplashScreen::onInitializationMessageChanged(const QString &initializationM
 
 void SplashScreen::initialize()
 {
-    connect(m_pluginManager, &PluginManager::loadingProgressChanged, this, &SplashScreen::onLoadingProgressChanged);
+    connect(m_pluginManager, &PluginManager::loadProgressChanged, this, &SplashScreen::onLoadProgressChanged);
     connect(m_pluginManager, &PluginManager::initializationProgressChanged, this, &SplashScreen::onInitializationProgressChanged);
-    connect(m_pluginManager, &PluginManager::loadingMessageChanged, this, &SplashScreen::onLoadingMessageChanged);
+    connect(m_pluginManager, &PluginManager::loadMessageChanged, this, &SplashScreen::onLoadMessageChanged);
     connect(m_pluginManager, &PluginManager::initializationMessageChanged, this, &SplashScreen::onInitializationMessageChanged);
 
 }

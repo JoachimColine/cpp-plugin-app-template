@@ -46,14 +46,14 @@ int main(int argc, char *argv[])
 
     // When plugins have loaded, display log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
-    QObject::connect(pluginManager, &JApp::PluginManager::pluginsLoaded, splashScreen, [splashScreen, v]{
+    QObject::connect(pluginManager, &JApp::PluginManager::loadFinished, splashScreen, [splashScreen, v]{
         splashScreen->finish(v);
         v->show();
     });
 
     // Let's go
     splashScreen->show();
-    pluginManager->loadPlugins();
+    pluginManager->load();
 
     // Execute the application
     int appExitCode = app.exec();
