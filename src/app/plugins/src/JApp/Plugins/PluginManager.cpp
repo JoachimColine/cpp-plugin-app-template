@@ -3,6 +3,7 @@
 #include "JApp/Plugins/LoadTask.h"
 #include <JApp/Log.h>
 
+#include <QCoreApplication>
 #include <QTimer>
 #include <QPluginLoader>
 #include <QDir>
@@ -134,8 +135,7 @@ void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
     setLoadProgress(qreal(m_loaders.count()) / qreal(m_files.count()));
     m_pluginsToInitialize.enqueue(jappPlugin);
     if (m_pluginsToInitialize.size() == 1)
-        // Let some time go to process events, e.g. splashscreen info update
-        QTimer::singleShot(50, this, [this]() { processPluginInitializationQueue(); });
+        QTimer::singleShot(0, this, &PluginManager::processPluginInitializationQueue);
 }
 
 void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
@@ -215,9 +215,9 @@ void PluginManager::processPluginInitializationQueue()
     }
     JApp::Plugin* p = m_pluginsToInitialize.dequeue();
     setInitializationMessage(QString("Initializing %1...").arg(p->name()));
+    QCoreApplication::processEvents();
     p->initialize();
     m_initializedPlugins.append(p);
     setInitializationProgress(qreal(m_initializedPlugins.count()) / qreal(m_files.count()));
-    // Let some time go to process events, e.g. splashscreen info update
-    QTimer::singleShot(50, this, [this]() { processPluginInitializationQueue(); });
+    processPluginInitializationQueue();
 }
