@@ -14,7 +14,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    JApp
-    Qt6::Core
-    Qt6::Widgets
+    JApp::Startup
 )

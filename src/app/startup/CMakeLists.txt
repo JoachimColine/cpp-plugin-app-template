@@ -8,6 +8,7 @@ add_library(startup STATIC ${SRC_FILES})
 target_link_libraries(startup PUBLIC
     Qt6::Core
     Qt6::Widgets
+    JApp::Core
     JApp::Logging
     JApp::Plugins
 )
