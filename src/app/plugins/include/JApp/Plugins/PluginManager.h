@@ -39,16 +39,17 @@ public:
 
 signals:
     void loadProgressChanged(qreal progress);
-    void loadMessageChanged(const QString& loadingMessage);
+    void loadMessageChanged(const QString& message);
     void initializationProgressChanged(qreal progress);
-    void initializationMessageChanged(const QString& loadingMessage);
+    void initializationMessageChanged(const QString& message);
     void loadFinished();
+    void initializationFinished();
 
 private slots:
     void onPluginLoaded(QPluginLoader* loader, QObject* plugin);
     void onPluginError(QString pluginFile, QString errorMessage);
-    void onLoadingTaskUpdated(QString loadingMessage);
-    void onLoadingTaskFinished(bool success, QString message);
+    void onLoadTaskMessageChanged(QString message);
+    void onLoadTaskFinished(bool success, QString message);
     void cleanUpTaskThread();
     void processPluginInitializationQueue();
 

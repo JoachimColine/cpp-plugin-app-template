@@ -93,9 +93,9 @@ bool JApp::PluginManager::load()
     m_loadTask->setPluginFiles(m_files);
     m_loadTask->moveToThread(m_loadTaskThread);
 
-    connect(m_loadTask, &LoadTask::taskUpdated, this, &PluginManager::onLoadingTaskUpdated);
+    connect(m_loadTask, &LoadTask::taskMessageChanged, this, &PluginManager::onLoadTaskMessageChanged);
     connect(m_loadTask, &LoadTask::pluginLoaded, this, &PluginManager::onPluginLoaded);
-    connect(m_loadTask, &LoadTask::taskFinished, this, &PluginManager::onLoadingTaskFinished);
+    connect(m_loadTask, &LoadTask::taskFinished, this, &PluginManager::onLoadTaskFinished);
     connect(m_loadTaskThread, &QThread::started, m_loadTask, &LoadTask::start);
     connect(m_loadTaskThread, &QThread::finished, this, &PluginManager::cleanUpTaskThread);
 
@@ -143,15 +143,22 @@ void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
     LOG_WARN() << QString("Error while loading %1: %2").arg(pluginFile).arg(errorMessage);
 }
 
-void PluginManager::onLoadingTaskUpdated(QString loadingMessage)
+void PluginManager::onLoadTaskMessageChanged(QString message)
 {
-    setLoadMessage(loadingMessage);
+    setLoadMessage(message);
 
 }
 
-void PluginManager::onLoadingTaskFinished(bool success, QString message)
+void PluginManager::onLoadTaskFinished(bool success, QString message)
 {
     setLoadProgress(1.0);
+
+    if (success) {
+        emit loadFinished();
+    } else {
+        LOG_WARN() << QString("Failed to load plugins: %1").arg(message);
+    }
+
 }
 
 void JApp::PluginManager::setLoadProgress(qreal progress)
@@ -209,7 +216,7 @@ void PluginManager::processPluginInitializationQueue()
     if (m_pluginsToInitialize.isEmpty()) {
         if (m_initializedPlugins.count() == m_loaders.count()) {
             setInitializationMessage("All plugins initialized.");
-            emit loadFinished();
+            emit initializationFinished();
         }
         return;
     }

@@ -32,7 +32,7 @@ void LoadTask::start()
     bool success = true;
 
     for (const QFileInfo &fileInfo : std::as_const(m_files)) {
-        emit taskUpdated(QString("Loading %1...").arg(fileInfo.fileName()));
+        emit taskMessageChanged(QString("Loading %1...").arg(fileInfo.fileName()));
 
         QString filePath = fileInfo.absoluteFilePath();
         QString fileName = fileInfo.fileName();
@@ -62,6 +62,6 @@ void LoadTask::start()
         emit pluginLoaded(loader, plugin);
     }
 
-    emit taskUpdated("All plugins loaded.");
+    emit taskMessageChanged("All plugins loaded.");
     emit taskFinished(success, "");
 }
