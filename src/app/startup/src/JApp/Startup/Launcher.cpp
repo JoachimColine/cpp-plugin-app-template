@@ -42,22 +42,23 @@ void Launcher::launch()
     m_application.setStyleSheet(loadStyleSheet());
 
     // Instantiate plugin manager
-    JApp::PluginManager* pluginManager = new JApp::PluginManager(QCoreApplication::applicationDirPath() + "/plugins");
+    JApp::PluginManager& pluginManager = JApp::PluginManager::instance();
+    pluginManager.setDirectory(QCoreApplication::applicationDirPath() + "/plugins");
 
     // Instantiate splashscreen to monitor plugins loading
     QPixmap pic(QString(":/splashscreen.png"));
-    JApp::SplashScreen* splashScreen = new JApp::SplashScreen(pluginManager, pic);
+    JApp::SplashScreen* splashScreen = new JApp::SplashScreen(&pluginManager, pic);
 
     // When plugins have loaded, display log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
-    QObject::connect(pluginManager, &JApp::PluginManager::loadFinished, splashScreen, [splashScreen, v]{
+    QObject::connect(&pluginManager, &JApp::PluginManager::loadFinished, splashScreen, [splashScreen, v]{
         splashScreen->finish(v);
         v->show();
     });
 
     // Let's go
     splashScreen->show();
-    pluginManager->load();
+    pluginManager.load();
 }
 
 void Launcher::shutdown()

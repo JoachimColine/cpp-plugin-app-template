@@ -23,8 +23,10 @@ class PluginManager : public QObject
     Q_PROPERTY(QString initializationMessage READ initializationMessage NOTIFY initializationMessageChanged)
 
 public:
-    explicit PluginManager(QString directory, QObject *parent = nullptr);
+    static PluginManager& instance();
     ~PluginManager();
+
+    void setDirectory(QString directory);
 
     QString directory() const;
     qreal loadProgress() const;
@@ -60,6 +62,7 @@ private:
     void setInitializationMessage(const QString& initializationMessage);
 
 private:
+    PluginManager();
     QString m_directory;
     QFileInfoList m_files;
     QList<QPluginLoader*> m_loaders;
@@ -73,6 +76,8 @@ private:
 
     QThread* m_loadTaskThread;
     LoadTask* m_loadTask;
+
+    static PluginManager* s_instance;
 };
 
 }

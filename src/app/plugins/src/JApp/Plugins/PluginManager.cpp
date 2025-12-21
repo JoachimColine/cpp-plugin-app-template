@@ -13,8 +13,10 @@
 
 using namespace JApp;
 
-PluginManager::PluginManager(QString directory, QObject *parent) : QObject(parent)
-    , m_directory(directory)
+PluginManager* PluginManager::s_instance = nullptr;
+
+PluginManager::PluginManager() : QObject()
+    , m_directory("")
     , m_files(QFileInfoList())
     , m_loadProgress(0.0)
     , m_loadMessage("")
@@ -24,6 +26,15 @@ PluginManager::PluginManager(QString directory, QObject *parent) : QObject(paren
     , m_loadTask(nullptr)
 {
 
+}
+
+PluginManager &PluginManager::instance()
+{
+    if (!s_instance) {
+        s_instance = new PluginManager();
+    }
+
+    return *s_instance;
 }
 
 PluginManager::~PluginManager()
@@ -36,6 +47,15 @@ PluginManager::~PluginManager()
     if (m_loadTaskThread) {
         m_loadTaskThread->deleteLater();
     }
+}
+
+void PluginManager::setDirectory(QString directory)
+{
+    if (!m_directory.isEmpty()) {
+        LOG_WARN() << QString("Can't set directory, already set to %1").arg(m_directory);
+        return;
+    }
+    m_directory = directory;
 }
 
 QString JApp::PluginManager::directory() const
