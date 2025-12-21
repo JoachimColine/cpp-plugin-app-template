@@ -10,7 +10,6 @@ target_link_libraries(startup PUBLIC
     Qt6::Widgets
     JApp::Core
     JApp::Logging
-    JApp::Plugins
 )
 
 target_include_directories(startup

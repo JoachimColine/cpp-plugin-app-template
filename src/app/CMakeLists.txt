@@ -6,7 +6,6 @@ set(APP_VERSION_FULL  "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_P
 
 add_subdirectory(logging)
 add_subdirectory(core)
-add_subdirectory(plugins)
 add_subdirectory(startup)
 
 add_library(JApp INTERFACE)
@@ -14,6 +13,5 @@ add_library(JApp INTERFACE)
 target_link_libraries(JApp INTERFACE
     JApp::Logging
     JApp::Core
-    JApp::Plugins
     JApp::Startup
 )
