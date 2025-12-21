@@ -7,33 +7,66 @@ using namespace JApp::Core::Gui;
 LogLevelDelegate::LogLevelDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
 void LogLevelDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                            const QModelIndex &index) const {
+                             const QModelIndex &index) const {
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
-    
+
     QString level = index.data().toString();
-    QColor bgColor = getColorForLogLevel(LogFormatter::logLevelFromString(level));
-    
+    LogLevel logLevel = LogFormatter::logLevelFromString(level);
+    QColor bgColor = getColorForLogLevel(logLevel);
     painter->save();
     painter->fillRect(opt.rect, bgColor);
-    
+
+    QFont font = opt.font;
+    applyFontStyleForLogLevel(font, logLevel);
+    painter->setFont(font);
     painter->setPen(Qt::black);
-    painter->drawText(opt.rect.adjusted(4, 0, -4, 0), 
-                      Qt::AlignVCenter, level);
+    painter->drawText(opt.rect.adjusted(4, 0, -4, 0), Qt::AlignVCenter, level);
+
     painter->restore();
 }
 
 QColor LogLevelDelegate::getColorForLogLevel(const LogLevel &level) const {
-    if (level == LogLevel::Critical)
-        return QColor(255, 200, 200);
-    else if (level == LogLevel::Warning)
-        return QColor(255, 255, 200);
-    else if (level == LogLevel::Info)
-        return QColor(200, 255, 200);
-    else if (level == LogLevel::Fatal)
-        return QColor(200, 200, 255);
-    else if (level == LogLevel::Debug)
-        return QColor(200, 255, 255);
-    else
-        return QColor(240, 240, 240);
+    QColor c;
+    switch (level) {
+    case LogLevel::Critical:
+        c =  QColor(255, 200, 200);
+        break;
+    case LogLevel::Warning:
+        c =  QColor(255, 255, 200);
+        break;
+    case LogLevel::Info:
+        c =  QColor(200, 255, 200);
+        break;
+    case LogLevel::Fatal:
+        c =  QColor(200, 200, 255);
+        break;
+    case LogLevel::Debug:
+        c =  QColor(200, 255, 255);
+        break;
+    default:
+        c = QColor(240, 240, 240);
+        break;
+    }
+
+    return c;
+}
+
+void LogLevelDelegate::applyFontStyleForLogLevel(QFont &font, const LogLevel &level) const {
+    switch (level) {
+    case LogLevel::Fatal:
+    case LogLevel::Critical:
+    case LogLevel::Warning:
+        font.setBold(true);
+        font.setItalic(false);
+        break;
+    case LogLevel::Debug:
+        font.setBold(false);
+        font.setItalic(true);
+        break;
+    default:
+        font.setBold(false);
+        font.setItalic(false);
+        break;
+    }
 }

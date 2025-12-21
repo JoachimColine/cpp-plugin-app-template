@@ -14,6 +14,7 @@ public:
                
 private:
     QColor getColorForLogLevel(const LogLevel &level) const;
+    void applyFontStyleForLogLevel(QFont& font, const LogLevel &level) const;
 };
 
 }
