@@ -2,14 +2,14 @@
 
 namespace JApp {
 
-class PluginManager;
+class PluginsInitializer;
 
 class SplashScreen : public QSplashScreen
 {
     Q_OBJECT
 
 public:
-    explicit SplashScreen(PluginManager* pluginManager, QPixmap pixmap);
+    explicit SplashScreen(PluginsInitializer& pluginsInitializer, QPixmap pixmap);
 
 protected:
     void drawContents(QPainter* painter) override;
@@ -23,7 +23,7 @@ private slots:
 private:
     void initialize();
 
-    PluginManager* m_pluginManager;
+    PluginsInitializer& m_pluginsInitializer;
     qreal m_pluginsLoadingProgress;
     qreal m_pluginsInitializationProgress;
     QString m_pluginsLoadingMessage;

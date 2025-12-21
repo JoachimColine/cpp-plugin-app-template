@@ -15,7 +15,7 @@ class Context;
 class Plugin;
 class LoadTask;
 
-class PluginManager : public QObject
+class PluginsInitializer : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString directory READ directory CONSTANT)
@@ -25,8 +25,8 @@ class PluginManager : public QObject
     Q_PROPERTY(QString initializationMessage READ initializationMessage NOTIFY initializationMessageChanged)
 
 public:
-    static PluginManager& instance();
-    ~PluginManager();
+    static PluginsInitializer& instance();
+    ~PluginsInitializer();
 
     void setDirectory(QString directory);
 
@@ -64,7 +64,7 @@ private:
     void setInitializationMessage(const QString& initializationMessage);
 
 private:
-    PluginManager();
+    PluginsInitializer();
     QString m_directory;
     QFileInfoList m_files;
     QList<QPluginLoader*> m_loaders;
@@ -78,7 +78,7 @@ private:
     LoadTask* m_loadTask;
     Core::Context& m_context;
 
-    static PluginManager* s_instance;
+    static PluginsInitializer* s_instance;
 };
 
 }

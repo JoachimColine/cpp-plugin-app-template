@@ -2,7 +2,7 @@
 #include <JApp/Logger.h>
 #include <JApp/Log.h>
 #include <JApp/Core/Gui/LogViewer.h>
-#include <JApp/Plugins/PluginManager.h>
+#include <JApp/Plugins/PluginsInitializer.h>
 #include <JApp/Startup/SplashScreen.h>
 #include <QApplication>
 #include <QScreen>
@@ -41,24 +41,24 @@ void Launcher::launch()
     // Style the application
     m_application.setStyleSheet(loadStyleSheet());
 
-    // Instantiate plugin manager
-    JApp::PluginManager& pluginManager = JApp::PluginManager::instance();
-    pluginManager.setDirectory(QCoreApplication::applicationDirPath() + "/plugins");
+    // Prepare plugins initialization
+    JApp::PluginsInitializer& pluginsInitializer = JApp::PluginsInitializer::instance();
+    pluginsInitializer.setDirectory(QCoreApplication::applicationDirPath() + "/plugins");
 
     // Instantiate splashscreen to monitor plugins loading
     QPixmap pic(QString(":/splashscreen.png"));
-    JApp::SplashScreen* splashScreen = new JApp::SplashScreen(&pluginManager, pic);
+    JApp::SplashScreen* splashScreen = new JApp::SplashScreen(pluginsInitializer, pic);
 
     // When plugins have loaded, display log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
-    QObject::connect(&pluginManager, &JApp::PluginManager::loadFinished, splashScreen, [splashScreen, v]{
+    QObject::connect(&pluginsInitializer, &JApp::PluginsInitializer::loadFinished, splashScreen, [splashScreen, v]{
         splashScreen->finish(v);
         v->show();
     });
 
     // Let's go
     splashScreen->show();
-    pluginManager.load();
+    pluginsInitializer.load();
 }
 
 void Launcher::shutdown()

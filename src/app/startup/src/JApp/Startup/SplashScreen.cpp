@@ -1,12 +1,12 @@
 #include "JApp/Startup/SplashScreen.h"
-#include <JApp/Plugins/PluginManager.h>
+#include <JApp/Plugins/PluginsInitializer.h>
 #include <JApp/Log.h>
 #include <QPainter>
 
 using namespace JApp;
 
-SplashScreen::SplashScreen(PluginManager* pluginManager, QPixmap pixmap) : QSplashScreen(pixmap)
-    , m_pluginManager(pluginManager)
+SplashScreen::SplashScreen(PluginsInitializer& pluginsInitializer, QPixmap pixmap) : QSplashScreen(pixmap)
+    , m_pluginsInitializer(pluginsInitializer)
     , m_pluginsLoadingProgress(0)
     , m_pluginsInitializationProgress(0)
     , m_pluginsLoadingMessage("")
@@ -73,9 +73,9 @@ void SplashScreen::onInitializationMessageChanged(const QString &initializationM
 
 void SplashScreen::initialize()
 {
-    connect(m_pluginManager, &PluginManager::loadProgressChanged, this, &SplashScreen::onLoadProgressChanged);
-    connect(m_pluginManager, &PluginManager::initializationProgressChanged, this, &SplashScreen::onInitializationProgressChanged);
-    connect(m_pluginManager, &PluginManager::loadMessageChanged, this, &SplashScreen::onLoadMessageChanged);
-    connect(m_pluginManager, &PluginManager::initializationMessageChanged, this, &SplashScreen::onInitializationMessageChanged);
+    connect(&m_pluginsInitializer, &PluginsInitializer::loadProgressChanged, this, &SplashScreen::onLoadProgressChanged);
+    connect(&m_pluginsInitializer, &PluginsInitializer::initializationProgressChanged, this, &SplashScreen::onInitializationProgressChanged);
+    connect(&m_pluginsInitializer, &PluginsInitializer::loadMessageChanged, this, &SplashScreen::onLoadMessageChanged);
+    connect(&m_pluginsInitializer, &PluginsInitializer::initializationMessageChanged, this, &SplashScreen::onInitializationMessageChanged);
 
 }

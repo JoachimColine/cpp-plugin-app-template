@@ -1,4 +1,4 @@
-#include "JApp/Plugins/PluginManager.h"
+#include "JApp/Plugins/PluginsInitializer.h"
 #include "JApp/Plugins/Plugin.h"
 #include "JApp/Plugins/LoadTask.h"
 #include <JApp/Log.h>
@@ -13,9 +13,9 @@
 
 using namespace JApp;
 
-PluginManager* PluginManager::s_instance = nullptr;
+PluginsInitializer* PluginsInitializer::s_instance = nullptr;
 
-PluginManager::PluginManager() : QObject()
+PluginsInitializer::PluginsInitializer() : QObject()
     , m_directory("")
     , m_files(QFileInfoList())
     , m_loadProgress(0.0)
@@ -29,16 +29,16 @@ PluginManager::PluginManager() : QObject()
 
 }
 
-PluginManager &PluginManager::instance()
+PluginsInitializer &PluginsInitializer::instance()
 {
     if (!s_instance) {
-        s_instance = new PluginManager();
+        s_instance = new PluginsInitializer();
     }
 
     return *s_instance;
 }
 
-PluginManager::~PluginManager()
+PluginsInitializer::~PluginsInitializer()
 {
     if (m_loadTaskThread && m_loadTaskThread->isRunning()) {
         m_loadTaskThread->quit();
@@ -50,7 +50,7 @@ PluginManager::~PluginManager()
     }
 }
 
-void PluginManager::setDirectory(QString directory)
+void PluginsInitializer::setDirectory(QString directory)
 {
     if (!m_directory.isEmpty()) {
         LOG_WARN() << QString("Can't set directory, already set to %1").arg(m_directory);
@@ -59,33 +59,33 @@ void PluginManager::setDirectory(QString directory)
     m_directory = directory;
 }
 
-QString JApp::PluginManager::directory() const
+QString JApp::PluginsInitializer::directory() const
 {
     return m_directory;
 }
 
-qreal JApp::PluginManager::loadProgress() const
+qreal JApp::PluginsInitializer::loadProgress() const
 {
     return m_loadProgress;
 }
 
-QString PluginManager::loadMessage() const
+QString PluginsInitializer::loadMessage() const
 {
     return m_loadMessage;
 }
 
-qreal PluginManager::initializationProgress() const
+qreal PluginsInitializer::initializationProgress() const
 {
     return m_initializationProgress;
 }
 
-QString PluginManager::initializationMessage() const
+QString PluginsInitializer::initializationMessage() const
 {
     return m_initializationMessage;
 }
 
 
-bool JApp::PluginManager::load()
+bool JApp::PluginsInitializer::load()
 {
     /* TODO
     if (false) {
@@ -114,11 +114,11 @@ bool JApp::PluginManager::load()
     m_loadTask->setPluginFiles(m_files);
     m_loadTask->moveToThread(m_loadTaskThread);
 
-    connect(m_loadTask, &LoadTask::taskMessageChanged, this, &PluginManager::onLoadTaskMessageChanged);
-    connect(m_loadTask, &LoadTask::pluginLoaded, this, &PluginManager::onPluginLoaded);
-    connect(m_loadTask, &LoadTask::taskFinished, this, &PluginManager::onLoadTaskFinished);
+    connect(m_loadTask, &LoadTask::taskMessageChanged, this, &PluginsInitializer::onLoadTaskMessageChanged);
+    connect(m_loadTask, &LoadTask::pluginLoaded, this, &PluginsInitializer::onPluginLoaded);
+    connect(m_loadTask, &LoadTask::taskFinished, this, &PluginsInitializer::onLoadTaskFinished);
     connect(m_loadTaskThread, &QThread::started, m_loadTask, &LoadTask::start);
-    connect(m_loadTaskThread, &QThread::finished, this, &PluginManager::cleanUpTaskThread);
+    connect(m_loadTaskThread, &QThread::finished, this, &PluginsInitializer::cleanUpTaskThread);
 
     m_loadTaskThread->start();
 
@@ -126,12 +126,12 @@ bool JApp::PluginManager::load()
 }
 
 
-QList<JApp::Plugin*> JApp::PluginManager::plugins() const
+QList<JApp::Plugin*> JApp::PluginsInitializer::plugins() const
 {
     return m_initializedPlugins;
 }
 
-void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
+void PluginsInitializer::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
 {
     if (loader == nullptr) {
         LOG_WARN() << "Loader is null after loading";
@@ -156,21 +156,21 @@ void PluginManager::onPluginLoaded(QPluginLoader *loader, QObject *plugin)
     setLoadProgress(qreal(m_loaders.count()) / qreal(m_files.count()));
     m_pluginsToInitialize.enqueue(jappPlugin);
     if (m_pluginsToInitialize.size() == 1)
-        QTimer::singleShot(0, this, &PluginManager::processPluginInitializationQueue);
+        QTimer::singleShot(0, this, &PluginsInitializer::processPluginInitializationQueue);
 }
 
-void PluginManager::onPluginError(QString pluginFile, QString errorMessage)
+void PluginsInitializer::onPluginError(QString pluginFile, QString errorMessage)
 {
     LOG_WARN() << QString("Error while loading %1: %2").arg(pluginFile).arg(errorMessage);
 }
 
-void PluginManager::onLoadTaskMessageChanged(QString message)
+void PluginsInitializer::onLoadTaskMessageChanged(QString message)
 {
     setLoadMessage(message);
 
 }
 
-void PluginManager::onLoadTaskFinished(bool success, QString message)
+void PluginsInitializer::onLoadTaskFinished(bool success, QString message)
 {
     setLoadProgress(1.0);
 
@@ -182,7 +182,7 @@ void PluginManager::onLoadTaskFinished(bool success, QString message)
 
 }
 
-void JApp::PluginManager::setLoadProgress(qreal progress)
+void JApp::PluginsInitializer::setLoadProgress(qreal progress)
 {
     if (qFuzzyCompare(progress, m_loadProgress))
         return;
@@ -191,7 +191,7 @@ void JApp::PluginManager::setLoadProgress(qreal progress)
     emit loadProgressChanged(m_loadProgress);
 }
 
-void PluginManager::setLoadMessage(const QString &loadMessage)
+void PluginsInitializer::setLoadMessage(const QString &loadMessage)
 {
     if (m_loadMessage == loadMessage)
         return;
@@ -200,7 +200,7 @@ void PluginManager::setLoadMessage(const QString &loadMessage)
     emit loadMessageChanged(m_loadMessage);
 }
 
-void PluginManager::setInitializationProgress(qreal progress)
+void PluginsInitializer::setInitializationProgress(qreal progress)
 {
     if (qFuzzyCompare(progress, m_initializationProgress))
         return;
@@ -209,7 +209,7 @@ void PluginManager::setInitializationProgress(qreal progress)
     emit initializationProgressChanged(m_initializationProgress);
 }
 
-void PluginManager::setInitializationMessage(const QString &initializationMessage)
+void PluginsInitializer::setInitializationMessage(const QString &initializationMessage)
 {
     if (m_initializationMessage == initializationMessage)
         return;
@@ -218,7 +218,7 @@ void PluginManager::setInitializationMessage(const QString &initializationMessag
     emit initializationMessageChanged(m_initializationMessage);
 }
 
-void JApp::PluginManager::cleanUpTaskThread()
+void JApp::PluginsInitializer::cleanUpTaskThread()
 {
     LOG_INFO() << "Cleaning up load plugins task thread";
 
@@ -232,7 +232,7 @@ void JApp::PluginManager::cleanUpTaskThread()
     }
 }
 
-void PluginManager::processPluginInitializationQueue()
+void PluginsInitializer::processPluginInitializationQueue()
 {
     if (m_pluginsToInitialize.isEmpty()) {
         if (m_initializedPlugins.count() == m_loaders.count()) {
