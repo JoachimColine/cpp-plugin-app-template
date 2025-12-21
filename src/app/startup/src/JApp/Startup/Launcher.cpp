@@ -51,14 +51,14 @@ void Launcher::launch()
 
     // When plugins have loaded, display log viewer
     JApp::Core::Gui::LogViewer* v = new JApp::Core::Gui::LogViewer();
-    QObject::connect(&pluginsInitializer, &JApp::PluginsInitializer::loadFinished, splashScreen, [splashScreen, v]{
+    QObject::connect(&pluginsInitializer, &JApp::PluginsInitializer::initialized, splashScreen, [splashScreen, v]{
         splashScreen->finish(v);
         v->show();
     });
 
     // Let's go
     splashScreen->show();
-    pluginsInitializer.load();
+    pluginsInitializer.initialize();
 }
 
 void Launcher::shutdown()

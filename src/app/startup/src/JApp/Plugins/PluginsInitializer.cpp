@@ -85,7 +85,7 @@ QString PluginsInitializer::initializationMessage() const
 }
 
 
-bool JApp::PluginsInitializer::load()
+bool JApp::PluginsInitializer::initialize()
 {
     /* TODO
     if (false) {
@@ -174,12 +174,9 @@ void PluginsInitializer::onLoadTaskFinished(bool success, QString message)
 {
     setLoadProgress(1.0);
 
-    if (success) {
-        emit loadFinished();
-    } else {
+    if (!success) {
         LOG_WARN() << QString("Failed to load plugins: %1").arg(message);
     }
-
 }
 
 void JApp::PluginsInitializer::setLoadProgress(qreal progress)
@@ -237,7 +234,7 @@ void PluginsInitializer::processPluginInitializationQueue()
     if (m_pluginsToInitialize.isEmpty()) {
         if (m_initializedPlugins.count() == m_files.count()) {
             setInitializationMessage("All plugins initialized.");
-            emit initializationFinished();
+            emit initialized();
         }
         return;
     }

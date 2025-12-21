@@ -37,7 +37,7 @@ public:
     qreal initializationProgress() const;
     QString initializationMessage() const;
 
-    bool load();
+    bool initialize();
 
     QList<JApp::Plugin*> plugins() const;
 
@@ -46,8 +46,7 @@ signals:
     void loadMessageChanged(const QString& message);
     void initializationProgressChanged(qreal progress);
     void initializationMessageChanged(const QString& message);
-    void loadFinished();
-    void initializationFinished();
+    void initialized();
 
 private slots:
     void onPluginLoaded(QPluginLoader* loader, QObject* plugin);
