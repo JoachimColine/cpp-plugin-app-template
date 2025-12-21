@@ -235,7 +235,7 @@ void JApp::PluginsInitializer::cleanUpTaskThread()
 void PluginsInitializer::processPluginInitializationQueue()
 {
     if (m_pluginsToInitialize.isEmpty()) {
-        if (m_initializedPlugins.count() == m_loaders.count()) {
+        if (m_initializedPlugins.count() == m_files.count()) {
             setInitializationMessage("All plugins initialized.");
             emit initializationFinished();
         }
