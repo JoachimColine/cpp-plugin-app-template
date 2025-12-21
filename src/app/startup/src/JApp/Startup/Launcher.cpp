@@ -35,6 +35,7 @@ void Launcher::launch()
     LOG_INFO() << "Build: " << __DATE__ << __TIME__ << (sizeof(void*) == 8 ? "64-bit" : "32-bit");
     LOG_INFO() << "Platform: " << QSysInfo::prettyProductName() << "(" << QSysInfo::kernelVersion() << ")";
     LOG_INFO() << "Qt version: " << QT_VERSION_STR;
+    LOG_INFO() << "Application version: " << APP_VERSION_FULL;
     LOG_INFO() << "Screen: " << QGuiApplication::primaryScreen()->geometry().width() << "x" << QGuiApplication::primaryScreen()->geometry().height();
 
     // Style the application

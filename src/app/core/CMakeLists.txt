@@ -20,4 +20,12 @@ set_target_properties(core PROPERTIES
     AUTOMOC ON
 )
 
+target_compile_definitions(core INTERFACE
+    APP_VERSION_MAJOR="${APP_VERSION_MAJOR}"
+    APP_VERSION_MINOR="${APP_VERSION_MINOR}"
+    APP_VERSION_PATCH="${APP_VERSION_PATCH}"
+    APP_VERSION_BUILD="${APP_VERSION_BUILD}"
+    APP_VERSION_FULL="${APP_VERSION_FULL}"
+)
+
 add_library(JApp::Core ALIAS core)
