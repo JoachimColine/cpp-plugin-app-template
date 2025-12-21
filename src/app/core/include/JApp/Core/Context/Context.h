@@ -1,4 +1,5 @@
 #pragma once
+#include <JApp/Core/Context/ObjectManager.h>
 
 namespace JApp::Core {
 
@@ -6,8 +7,7 @@ class Context {
 public:
     static Context& instance();
 
-    // to be filled with centralized resources
-    // as the code grows
+    ObjectManager& objectManager();
 
 private:
     Context();

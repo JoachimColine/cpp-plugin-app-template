@@ -16,3 +16,8 @@ Context& Context::instance()
     }
     return *s_instance;
 }
+
+ObjectManager& Context::objectManager()
+{
+    return ObjectManager::instance();
+}
