@@ -9,6 +9,7 @@ target_link_libraries(plugins PUBLIC
     Qt6::Core
     Qt6::Widgets
     JApp::Logging
+    JApp::Core
 )
 
 target_include_directories(plugins

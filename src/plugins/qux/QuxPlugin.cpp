@@ -9,7 +9,7 @@ QString QuxPlugin::name() const
     return "QuxPlugin";
 }
 
-bool QuxPlugin::initialize()
+bool QuxPlugin::initialize(const JApp::Core::Context& context)
 {
     LOG_DEBUG() << "QuxPlugin initializing...";
     QThread::sleep(1);

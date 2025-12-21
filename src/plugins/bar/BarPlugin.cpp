@@ -9,7 +9,7 @@ QString BarPlugin::name() const
     return "BarPlugin";
 }
 
-bool BarPlugin::initialize()
+bool BarPlugin::initialize(const JApp::Core::Context& context)
 {
     LOG_DEBUG() << "BarPlugin initializing...";
     QThread::sleep(1);

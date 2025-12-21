@@ -24,6 +24,7 @@ PluginManager::PluginManager() : QObject()
     , m_initializationMessage("")
     , m_loadTaskThread(nullptr)
     , m_loadTask(nullptr)
+    , m_context(Core::Context::instance())
 {
 
 }
@@ -243,7 +244,7 @@ void PluginManager::processPluginInitializationQueue()
     JApp::Plugin* p = m_pluginsToInitialize.dequeue();
     setInitializationMessage(QString("Initializing %1...").arg(p->name()));
     QCoreApplication::processEvents();
-    p->initialize();
+    p->initialize(m_context);
     m_initializedPlugins.append(p);
     setInitializationProgress(qreal(m_initializedPlugins.count()) / qreal(m_files.count()));
     processPluginInitializationQueue();

@@ -9,7 +9,9 @@
 class QPluginLoader;
 
 namespace JApp {
-
+namespace Core {
+class Context;
+}
 class Plugin;
 class LoadTask;
 
@@ -71,11 +73,10 @@ private:
     QString m_loadMessage;
     qreal m_initializationProgress;
     QString m_initializationMessage;
-
     QQueue<JApp::Plugin*> m_pluginsToInitialize;
-
     QThread* m_loadTaskThread;
     LoadTask* m_loadTask;
+    Core::Context& m_context;
 
     static PluginManager* s_instance;
 };

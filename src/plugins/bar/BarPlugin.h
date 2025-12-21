@@ -15,7 +15,7 @@ public:
     ~BarPlugin() override = default;
 
     QString name() const override;
-    bool initialize() override;
+    bool initialize(const JApp::Core::Context& context) override;
     void shutdown() override;
 };
 

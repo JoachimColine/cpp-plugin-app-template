@@ -9,7 +9,7 @@ QString BazPlugin::name() const
     return "BazPlugin";
 }
 
-bool BazPlugin::initialize()
+bool BazPlugin::initialize(const JApp::Core::Context& context)
 {
     LOG_DEBUG() << "BazPlugin initializing...";
     QThread::sleep(1);

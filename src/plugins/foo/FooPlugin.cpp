@@ -9,7 +9,7 @@ QString FooPlugin::name() const
     return "FooPlugin";
 }
 
-bool FooPlugin::initialize()
+bool FooPlugin::initialize(const JApp::Core::Context& context)
 {
     LOG_DEBUG() << "FooPlugin initializing...";
     QThread::sleep(1);
